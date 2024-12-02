@@ -13,7 +13,7 @@ pub mod day1 {
         }
     }
 
-    fn parse_day_one(input: &str) -> Lists {
+    fn parse(input: &str) -> Lists {
         let (left, right) = input
             .lines()
             .map(|line| {
@@ -28,7 +28,7 @@ pub mod day1 {
 
     pub fn solve_part_one(input: &str) -> u32 {
         // solution goes here
-        let mut lists = parse_day_one(input);
+        let mut lists = parse(input);
 
         lists.sort();
 
@@ -38,7 +38,7 @@ pub mod day1 {
     }
 
     pub fn solve_part_two(input: &str) -> u32 {
-        let lists = parse_day_one(input);
+        let lists = parse(input);
 
         let mut counts: HashMap<u32, u32> = HashMap::new();
 
