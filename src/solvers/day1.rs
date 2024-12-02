@@ -7,7 +7,7 @@ pub mod day1 {
     }
 
     impl Lists {
-        pub fn sort(&mut self) {
+        fn sort(&mut self) {
             self.left.sort();
             self.right.sort();
         }
@@ -17,14 +17,9 @@ pub mod day1 {
         let (left, right) = input
             .lines()
             .map(|line| {
-                match &line
-                    .split_whitespace()
-                    .map(|s| s.parse::<u32>().unwrap())
-                    .collect::<Vec<_>>()[..]
-                {
-                    &[first, second, ..] => (first, second),
-                    _ => unreachable!(),
-                }
+                line.split_once("   ")
+                    .map(|(a, b)| (a.parse::<u32>().unwrap(), b.parse::<u32>().unwrap()))
+                    .unwrap()
             })
             .unzip();
 
@@ -63,13 +58,13 @@ pub mod day1 {
 
         #[test]
         fn test_part_one() {
-            let result = solve_part_one(&std::fs::read_to_string("data/day1/input.txt").unwrap());
+            let result = solve_part_one(&std::fs::read_to_string("data/day1/test.txt").unwrap());
             assert_eq!(11, result);
         }
 
         #[test]
         fn test_part_two() {
-            let result = solve_part_two(&std::fs::read_to_string("data/day1/input.txt").unwrap());
+            let result = solve_part_two(&std::fs::read_to_string("data/day1/test.txt").unwrap());
             assert_eq!(31, result);
         }
     }
