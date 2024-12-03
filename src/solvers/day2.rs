@@ -1,5 +1,3 @@
-use std::path::Iter;
-
 struct Input {
     lists: Vec<Vec<i32>>,
 }
@@ -25,10 +23,6 @@ fn is_safe(list: &Vec<i32>) -> bool {
     }
 
     diffs.iter().all(|&i| i < 4 && i > 0)
-}
-
-fn skip_iter<'a, T>(s: &'a [T], n: usize) -> impl Iterator<Item = &T> {
-    s.iter().take(n).chain(s.iter().skip(n + 1)).into_iter()
 }
 
 fn generate_sublists(list: &Vec<i32>) -> impl Iterator<Item = Vec<i32>> + '_ {
