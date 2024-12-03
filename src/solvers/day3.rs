@@ -9,12 +9,9 @@ pub fn solve_part_one(input: &str) -> usize {
             a.parse::<usize>().unwrap() * b.parse::<usize>().unwrap()
         })
         .sum()
-
-    // solution goes here
 }
 
 pub fn solve_part_two(input: &str) -> usize {
-    // solution goes here
     input
         .split("do()")
         .map(|s| match s.split_once("don't()") {
