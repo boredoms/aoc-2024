@@ -1,9 +1,10 @@
+use once_cell::sync::Lazy;
 use regex::Regex;
 
 pub fn solve_part_one(input: &str) -> usize {
-    let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+    static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"mul\((\d+),(\d+)\)").unwrap());
 
-    re.captures_iter(input)
+    RE.captures_iter(input)
         .map(|c| {
             let (_, [a, b]) = c.extract();
             a.parse::<usize>().unwrap() * b.parse::<usize>().unwrap()
