@@ -24,7 +24,7 @@ impl Grid {
     }
 }
 
-#[derive(Debug, Copy)]
+#[derive(Debug, Clone, Copy)]
 struct Index {
     x: i32,
     y: i32,
