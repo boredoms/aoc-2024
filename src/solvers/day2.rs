@@ -16,13 +16,10 @@ fn parse(input: &str) -> Input {
 }
 
 fn is_safe(list: &Vec<i32>) -> bool {
-    let mut diffs = list.windows(2).map(|w| w[0] - w[1]).collect::<Vec<_>>();
-
-    if diffs[0].is_negative() {
-        diffs.iter_mut().for_each(|i| *i = -*i);
-    }
-
-    diffs.iter().all(|&i| i < 4 && i > 0)
+    list.windows(2)
+        .map(|w| w[0] - w[1])
+        .all(|d| d.abs() > 0 && d.abs() < 4)
+        && (list.iter().is_sorted_by(|a, b| a < b) || list.iter().is_sorted_by(|a, b| a > b))
 }
 
 fn generate_sublists(list: &Vec<i32>) -> impl Iterator<Item = Vec<i32>> + '_ {
