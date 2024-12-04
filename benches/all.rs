@@ -1,14 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use rust_aoc::solvers::{day1, day2, day3};
+use rust_aoc::solvers::{day1, day2, day3, day4};
 use std::hint::black_box;
-
-fn fibonacci(n: u64) -> u64 {
-    match n {
-        0 => 1,
-        1 => 1,
-        n => fibonacci(n - 1) + fibonacci(n - 2),
-    }
-}
 
 fn criterion_benchmark(c: &mut Criterion) {
     let input = std::fs::read_to_string("data/day1/input.txt").unwrap();
@@ -36,6 +28,15 @@ fn criterion_benchmark(c: &mut Criterion) {
     });
     c.bench_function("Day 3, Part 2", |b| {
         b.iter(|| day3::solve_part_two(black_box(&input)))
+    });
+
+    let input = std::fs::read_to_string("data/day4/input.txt").unwrap();
+
+    c.bench_function("Day 4, Part 1", |b| {
+        b.iter(|| day4::solve_part_one(black_box(&input)))
+    });
+    c.bench_function("Day 4, Part 2", |b| {
+        b.iter(|| day4::solve_part_two(black_box(&input)))
     });
 }
 
