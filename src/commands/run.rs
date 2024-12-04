@@ -1,4 +1,4 @@
-use crate::solvers::{day1, day2, day3};
+use crate::solvers::{day1, day2, day3, day4};
 
 pub fn run(day: usize) {
     let input =
@@ -8,6 +8,7 @@ pub fn run(day: usize) {
         1 => (day1::solve_part_one(&input), day1::solve_part_two(&input)),
         2 => (day2::solve_part_one(&input), day2::solve_part_two(&input)),
         3 => (day3::solve_part_one(&input), day3::solve_part_two(&input)),
+        4 => (day4::solve_part_one(&input), day4::solve_part_two(&input)),
         _ => todo!("not implemented"),
     };
 
