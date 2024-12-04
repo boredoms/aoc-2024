@@ -24,6 +24,7 @@ impl Grid {
     }
 }
 
+#[derive(Debug, Copy)]
 struct Index {
     x: i32,
     y: i32,
@@ -77,9 +78,9 @@ fn parse(input: &str) -> Grid {
     }
 }
 
-fn take_step(grid: &Grid, index: &Index, d: &Direction) -> Option<Index> {
+fn take_n_steps(grid: &Grid, index: &Index, d: &Direction, steps: i32) -> Option<Index> {
     let (i, j) = d.to_tuple();
-    let (x, y) = (index.x + i, index.y + j);
+    let (x, y) = (index.x + steps * i, index.y + steps * j);
 
     if x < 0 || x >= grid.size.x || y < 0 || y >= grid.size.y {
         None
@@ -88,37 +89,29 @@ fn take_step(grid: &Grid, index: &Index, d: &Direction) -> Option<Index> {
     }
 }
 
-fn grid_search_direction(grid: &Grid, index: &Index, d: &Direction, needle: &Vec<char>) -> usize {
-    let mut i = 1;
-    let mut pos = Index {
-        x: index.x,
-        y: index.y,
-    };
+fn take_step(grid: &Grid, index: &Index, d: &Direction) -> Option<Index> {
+    take_n_steps(grid, index, d, 1)
+}
 
-    while let Some(index) = take_step(grid, &pos, d) {
-        if grid.get(&index) != needle[i] {
+fn grid_search_direction(grid: &Grid, index: &Index, d: &Direction, needle: &[char]) -> usize {
+    for (i, &ch) in needle.iter().enumerate() {
+        if let Some(next_pos) = take_n_steps(grid, index, d, i as i32) {
+            if grid.get(&next_pos) != ch {
+                return 0;
+            }
+        } else {
             return 0;
-        }
-        i += 1;
-        pos = index;
-
-        if i == needle.len() {
-            return 1;
         }
     }
 
-    0
+    1
 }
 
 fn grid_search(grid: &Grid, index: &Index, needle: &Vec<char>) -> usize {
-    if grid.get(index) != needle[0] {
-        0
-    } else {
-        DIRECTIONS
-            .iter()
-            .map(|d| grid_search_direction(grid, index, d, needle))
-            .sum()
-    }
+    DIRECTIONS
+        .iter()
+        .map(|d| grid_search_direction(grid, index, d, needle))
+        .sum()
 }
 
 pub fn solve_part_one(input: &str) -> usize {
@@ -135,12 +128,10 @@ fn x_search(grid: &Grid, index: &Index) -> usize {
         return 0;
     }
 
+    let diagonals: [Direction; 4] = [Direction::NW, Direction::NE, Direction::SE, Direction::SW];
+
     if let [Some(a), Some(b), Some(c), Some(d)] =
-        [Direction::NW, Direction::NE, Direction::SE, Direction::SW].map(|d| {
-            take_step(grid, index, &d)
-                .map(|f| grid.get_safe(&f))
-                .flatten()
-        })
+        diagonals.map(|d| take_step(grid, index, &d).and_then(|f| grid.get_safe(&f)))
     {
         match (a, b, c, d) {
             ('M', 'M', 'S', 'S') => return 1,
