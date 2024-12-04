@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day4/input.txt").unwrap());
+        let result = solve_part_two(&std::fs::read_to_string("data/day4/test.txt").unwrap());
         assert_eq!(9, result);
     }
 }
