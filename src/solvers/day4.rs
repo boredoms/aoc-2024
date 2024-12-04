@@ -70,7 +70,7 @@ impl Direction {
 fn parse(input: &str) -> Grid {
     let y = input.lines().count() as i32;
     let x = input.split_once('\n').unwrap().0.len() as i32;
-    let chars: Vec<char> = input.lines().map(|line| line.chars()).flatten().collect();
+    let chars: Vec<char> = input.lines().flat_map(|line| line.chars()).collect();
 
     Grid {
         chars,
@@ -107,7 +107,7 @@ fn grid_search_direction(grid: &Grid, index: &Index, d: &Direction, needle: &[ch
     1
 }
 
-fn grid_search(grid: &Grid, index: &Index, needle: &Vec<char>) -> usize {
+fn grid_search(grid: &Grid, index: &Index, needle: &[char]) -> usize {
     DIRECTIONS
         .iter()
         .map(|d| grid_search_direction(grid, index, d, needle))

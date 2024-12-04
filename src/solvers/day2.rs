@@ -15,14 +15,14 @@ fn parse(input: &str) -> Input {
     Input { lists }
 }
 
-fn is_safe(list: &Vec<i32>) -> bool {
+fn is_safe(list: &[i32]) -> bool {
     list.windows(2)
         .map(|w| w[0] - w[1])
         .all(|d| d.abs() > 0 && d.abs() < 4)
         && (list.iter().is_sorted_by(|a, b| a < b) || list.iter().is_sorted_by(|a, b| a > b))
 }
 
-fn generate_sublists(list: &Vec<i32>) -> impl Iterator<Item = Vec<i32>> + '_ {
+fn generate_sublists(list: &[i32]) -> impl Iterator<Item = Vec<i32>> + '_ {
     (0..list.len()).map(|i| {
         let mut new_list = list.to_vec();
         new_list.remove(i);
