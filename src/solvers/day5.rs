@@ -1,52 +1,37 @@
 use std::{cmp, collections::HashMap, hash::Hash};
 
-#[derive(Debug, Clone, Copy)]
-struct Constraint {
-    low: u32,
-    high: u32,
-}
+type Ordering = HashMap<(u32, u32), cmp::Ordering>;
 
 #[derive(Debug, Clone)]
 struct Input {
-    rules: Vec<Constraint>,
     pages: Vec<Vec<u32>>,
+    ordering: Ordering,
 }
-
-type Ordering = HashMap<(u32, u32), cmp::Ordering>;
 
 fn parse(input: &str) -> Input {
     let (rules, pages) = input.split_once("\n\n").unwrap();
 
+    let mut ordering = HashMap::new();
+
+    rules.lines().for_each(|s| {
+        let (a, b) = s.split_once('|').unwrap();
+        let a = a.parse().unwrap();
+        let b = b.parse().unwrap();
+
+        if a < b {
+            ordering.insert((a, b), cmp::Ordering::Less);
+        } else {
+            ordering.insert((b, a), cmp::Ordering::Greater);
+        }
+    });
+
     Input {
-        rules: rules
-            .lines()
-            .map(|s| {
-                let (a, b) = s.split_once('|').unwrap();
-                Constraint {
-                    low: a.parse().unwrap(),
-                    high: b.parse().unwrap(),
-                }
-            })
-            .collect(),
         pages: pages
             .lines()
             .map(|s| s.split(',').map(|a| a.parse().unwrap()).collect())
             .collect(),
+        ordering,
     }
-}
-
-fn ordering(rules: &[Constraint]) -> Ordering {
-    let mut ordering = HashMap::new();
-
-    for c in rules {
-        if (c.low < c.high) {
-            ordering.insert((c.low, c.high), cmp::Ordering::Less);
-        } else {
-            ordering.insert((c.high, c.low), cmp::Ordering::Greater);
-        }
-    }
-
-    ordering
 }
 
 fn middle<T>(list: &[T]) -> &T {
@@ -65,30 +50,28 @@ fn is_ordered(pages: &[u32], ordering: &Ordering) -> bool {
 
 pub fn solve_part_one(input: &str) -> usize {
     let input = parse(input);
-    let ordering = ordering(&input.rules);
 
     input
         .pages
         .iter()
-        .filter(|pages| is_ordered(&pages, &ordering))
+        .filter(|pages| is_ordered(&pages, &input.ordering))
         .map(|p| middle(&p))
         .sum::<u32>() as usize
 }
 
 pub fn solve_part_two(input: &str) -> usize {
     let mut input = parse(input);
-    let ordering = ordering(&input.rules);
 
     input
         .pages
         .iter_mut()
-        .filter(|pages| !is_ordered(&pages, &ordering))
+        .filter(|pages| !is_ordered(&pages, &input.ordering))
         .map(|pages| {
             pages.sort_by(|a, b| {
                 if a < b {
-                    *ordering.get(&(*a, *b)).unwrap()
+                    *input.ordering.get(&(*a, *b)).unwrap()
                 } else {
-                    ordering.get(&(*b, *a)).unwrap().reverse()
+                    input.ordering.get(&(*b, *a)).unwrap().reverse()
                 }
             });
 
