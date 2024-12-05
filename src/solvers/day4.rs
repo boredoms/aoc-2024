@@ -108,10 +108,14 @@ fn grid_search_direction(grid: &Grid, index: &Index, d: &Direction, needle: &[ch
 }
 
 fn grid_search(grid: &Grid, index: &Index, needle: &[char]) -> usize {
-    DIRECTIONS
-        .iter()
-        .map(|d| grid_search_direction(grid, index, d, needle))
-        .sum()
+    if needle[0] != grid.get(index) {
+        0
+    } else {
+        DIRECTIONS
+            .iter()
+            .map(|d| grid_search_direction(grid, index, d, needle))
+            .sum()
+    }
 }
 
 pub fn solve_part_one(input: &str) -> usize {
