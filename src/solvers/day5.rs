@@ -1,4 +1,4 @@
-use std::{cmp, collections::HashMap, hash::Hash};
+use std::{cmp, collections::HashMap};
 
 type Ordering = HashMap<(u32, u32), cmp::Ordering>;
 
@@ -54,8 +54,8 @@ pub fn solve_part_one(input: &str) -> usize {
     input
         .pages
         .iter()
-        .filter(|pages| is_ordered(&pages, &input.ordering))
-        .map(|p| middle(&p))
+        .filter(|pages| is_ordered(pages, &input.ordering))
+        .map(|p| middle(p))
         .sum::<u32>() as usize
 }
 
@@ -65,7 +65,7 @@ pub fn solve_part_two(input: &str) -> usize {
     input
         .pages
         .iter_mut()
-        .filter(|pages| !is_ordered(&pages, &input.ordering))
+        .filter(|pages| !is_ordered(pages, &input.ordering))
         .map(|pages| {
             pages.sort_by(|a, b| {
                 if a < b {
