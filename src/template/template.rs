@@ -1,10 +1,8 @@
 pub fn solve_part_one(input: &str) -> usize {
-    // solution goes here
     todo!()
 }
 
 pub fn solve_part_two(input: &str) -> usize {
-    // solution goes here
     todo!()
 }
 
