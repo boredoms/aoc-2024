@@ -8,7 +8,28 @@ pub struct Grid<T> {
     pub size: Point,
 }
 
-// TODO: iterator over coordinates
+// iterator for iterating the coordinates of a grid in english reading order
+#[derive(Debug)]
+pub struct GridIterator<'a, T> {
+    grid: &'a Grid<T>,
+    n: usize,
+}
+
+impl<'a, T> Iterator for GridIterator<'a, T> {
+    type Item = Point;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.n == self.grid.len() {
+            None
+        } else {
+            let pos = self.grid.point_from_index(self.n);
+
+            self.n += 1;
+
+            Some(pos)
+        }
+    }
+}
 
 impl<T> Index<Point> for Grid<T> {
     type Output = T;
@@ -69,6 +90,10 @@ impl<T> Grid<T> {
 
     pub fn len(&self) -> usize {
         self.elements.len()
+    }
+
+    pub fn iter(&self) -> GridIterator<T> {
+        GridIterator { grid: self, n: 0 }
     }
 }
 

@@ -131,16 +131,12 @@ fn score_regions_(grid: &Grid<u8>) -> usize {
     let mut total = 0;
 
     // visit all points
-    for x in 0..grid.size.x {
-        for y in 0..grid.size.y {
-            let pos = Point::new(x, y);
-
-            if visited[pos] {
-                continue;
-            }
-
-            total += dfs(grid, &mut visited, &mut stack, pos);
+    for pos in grid.iter() {
+        if visited[pos] {
+            continue;
         }
+
+        total += dfs(grid, &mut visited, &mut stack, pos);
     }
 
     total
