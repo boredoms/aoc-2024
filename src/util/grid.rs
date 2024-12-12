@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::solvers::point::Point;
+use crate::util::point::Point;
 
 #[derive(Debug, Clone)]
 pub struct Grid<T> {

@@ -3,6 +3,11 @@ use clap::{Parser, ValueEnum};
 pub mod commands;
 pub mod solvers;
 
+pub mod util {
+    pub mod grid;
+    pub mod point;
+}
+
 #[derive(Debug, Clone, ValueEnum)]
 pub enum Command {
     Init,

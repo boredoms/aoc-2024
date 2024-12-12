@@ -1,6 +1,3 @@
-pub mod grid;
-pub mod point;
-
 pub mod day01;
 pub mod day02;
 pub mod day10;

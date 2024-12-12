@@ -1,6 +1,7 @@
-use crate::solvers::grid::Grid;
-
-use super::point::{Point, CARDINALS, NEIGHBORS};
+use crate::{
+    util::grid::Grid,
+    util::point::{Point, CARDINALS, NEIGHBORS},
+};
 
 fn score_regions(grid: &Grid<u8>) -> usize {
     let mut visited: Grid<bool> = Grid::new_with_same_size(grid);

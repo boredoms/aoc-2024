@@ -1,7 +1,9 @@
 use std::{collections::HashSet, mem::swap};
 
-use crate::solvers::grid::Grid;
-use crate::solvers::point::{Point, CARDINALS, UP};
+use crate::util::{
+    grid::Grid,
+    point::{Point, CARDINALS},
+};
 
 pub fn score(grid: &Grid<u8>, p: Point) -> usize {
     let mut level = grid[p];

@@ -1,6 +1,6 @@
-use std::collections::{hash_set, HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 
-use crate::solvers::grid::Grid;
+use crate::util::grid::Grid;
 
 pub fn solve_part_one(input: &str) -> usize {
     let input = Grid::from_str(input);
