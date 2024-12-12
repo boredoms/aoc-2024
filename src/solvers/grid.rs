@@ -1,4 +1,6 @@
-use std::ops::{Add, Index, IndexMut, Sub};
+use std::ops::{Index, IndexMut};
+
+use crate::solvers::point::Point;
 
 #[derive(Debug, Clone)]
 pub struct Grid<T> {
@@ -6,65 +8,7 @@ pub struct Grid<T> {
     pub size: Point,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
-pub struct Point {
-    pub x: i32,
-    pub y: i32,
-}
-
-impl Point {
-    pub const fn new(x: i32, y: i32) -> Point {
-        Point { x, y }
-    }
-
-    pub fn manhattan(&self, other: &Point) -> i32 {
-        (self.x - other.x).abs() + (self.y - other.y).abs()
-    }
-}
-
-impl Add for Point {
-    type Output = Point;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Point::new(self.x + rhs.x, self.y + rhs.y)
-    }
-}
-
-impl Sub for Point {
-    type Output = Point;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Point::new(self.x - rhs.x, self.y - rhs.y)
-    }
-}
-
-const ORIGIN: Point = Point::new(0, 0);
-const UP: Point = Point::new(0, -1);
-const DOWN: Point = Point::new(0, 1);
-const LEFT: Point = Point::new(-1, 0);
-const RIGHT: Point = Point::new(1, 0);
-
-impl PartialOrd for Point {
-    fn gt(&self, other: &Self) -> bool {
-        self.x > other.x && self.y > other.y
-    }
-
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        if self.x == other.x && self.y == other.y {
-            return Some(std::cmp::Ordering::Equal);
-        }
-
-        if self.gt(other) {
-            return Some(std::cmp::Ordering::Greater);
-        }
-
-        if other.gt(&self) {
-            return Some(std::cmp::Ordering::Less);
-        }
-
-        None
-    }
-}
+// TODO: iterator over coordinates
 
 impl<T> Index<Point> for Grid<T> {
     type Output = T;
@@ -96,6 +40,14 @@ impl<T> Grid<T> {
         index.x >= 0 && index.x < self.size.x && index.y >= 0 && index.y < self.size.y
     }
 
+    pub fn try_get(&self, index: &Point) -> Option<&T> {
+        if self.in_grid(index) {
+            Some(&self[*index])
+        } else {
+            None
+        }
+    }
+
     pub fn find(&self, predicate: impl Fn(&T) -> bool) -> Option<Point> {
         self.elements
             .iter()
@@ -113,6 +65,41 @@ impl<T> Grid<T> {
         });
 
         res
+    }
+
+    pub fn len(&self) -> usize {
+        self.elements.len()
+    }
+}
+
+impl<T: Default + Copy> Grid<T> {
+    pub fn new(x: i32, y: i32) -> Self {
+        Grid {
+            elements: vec![T::default(); (x * y) as usize],
+            size: Point::new(x, y),
+        }
+    }
+
+    pub fn new_from_size(size: &Point) -> Self {
+        Grid {
+            elements: vec![T::default(); (size.x * size.y) as usize],
+            size: *size,
+        }
+    }
+
+    pub fn new_with_same_size<A>(parent: &Grid<A>) -> Self {
+        Grid {
+            elements: vec![T::default(); parent.len()],
+            size: parent.size,
+        }
+    }
+
+    pub fn get_or_default(&self, index: &Point) -> T {
+        if self.in_grid(index) {
+            self[*index]
+        } else {
+            T::default()
+        }
     }
 }
 
