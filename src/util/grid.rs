@@ -54,7 +54,7 @@ impl<T> Grid<T> {
 
     #[inline]
     fn point_from_index(&self, i: usize) -> Point {
-        Point::new((i as i32) % self.size.x, (i as i32) / self.size.x)
+        Point::new((i as i64) % self.size.x, (i as i64) / self.size.x)
     }
 
     pub fn in_grid(&self, index: &Point) -> bool {
@@ -98,7 +98,7 @@ impl<T> Grid<T> {
 }
 
 impl<T: Default + Copy> Grid<T> {
-    pub fn new(x: i32, y: i32) -> Self {
+    pub fn new(x: i64, y: i64) -> Self {
         Grid {
             elements: vec![T::default(); (x * y) as usize],
             size: Point::new(x, y),
@@ -143,7 +143,7 @@ impl Grid<u8> {
 
         Grid {
             elements,
-            size: Point::new(width as i32, height as i32),
+            size: Point::new(width as i64, height as i64),
         }
     }
 }

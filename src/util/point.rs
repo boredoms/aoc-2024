@@ -1,9 +1,11 @@
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
+
+// TODO: make this generic for different integer types
 pub struct Point {
-    pub x: i32,
-    pub y: i32,
+    pub x: i64,
+    pub y: i64,
 }
 
 pub const ORIGIN: Point = Point::new(0, 0);
@@ -24,11 +26,11 @@ pub const NEIGHBORS: [Point; 8] = [
 ];
 
 impl Point {
-    pub const fn new(x: i32, y: i32) -> Point {
+    pub const fn new(x: i64, y: i64) -> Point {
         Point { x, y }
     }
 
-    pub fn manhattan(&self, other: &Point) -> i32 {
+    pub fn manhattan(&self, other: &Point) -> i64 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
 }
