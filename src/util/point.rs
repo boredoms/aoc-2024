@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
 
@@ -62,6 +62,36 @@ impl SubAssign for Point {
     fn sub_assign(&mut self, rhs: Self) {
         self.x -= rhs.x;
         self.y -= rhs.y;
+    }
+}
+
+impl Mul<i64> for Point {
+    type Output = Point;
+
+    fn mul(self, rhs: i64) -> Self::Output {
+        Point::new(self.x * rhs, self.y * rhs)
+    }
+}
+
+impl MulAssign<i64> for Point {
+    fn mul_assign(&mut self, rhs: i64) {
+        self.x *= rhs;
+        self.y *= rhs;
+    }
+}
+
+impl Rem<i64> for Point {
+    type Output = Point;
+
+    fn rem(self, rhs: i64) -> Self::Output {
+        Point::new(self.x % rhs, self.y % rhs)
+    }
+}
+
+impl RemAssign<i64> for Point {
+    fn rem_assign(&mut self, rhs: i64) {
+        self.x %= rhs;
+        self.y %= rhs;
     }
 }
 
