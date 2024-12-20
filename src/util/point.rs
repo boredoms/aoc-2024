@@ -95,6 +95,14 @@ impl RemAssign<i64> for Point {
     }
 }
 
+impl Rem<Point> for Point {
+    type Output = Point;
+
+    fn rem(self, rhs: Point) -> Self::Output {
+        Point::new(self.x % rhs.x, self.y % rhs.y)
+    }
+}
+
 impl PartialOrd for Point {
     fn gt(&self, other: &Self) -> bool {
         self.x > other.x && self.y > other.y

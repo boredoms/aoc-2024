@@ -1,4 +1,7 @@
-use std::ops::{Index, IndexMut};
+use std::{
+    fmt::Display,
+    ops::{Index, IndexMut},
+};
 
 use crate::util::point::Point;
 
@@ -105,6 +108,13 @@ impl<T: Default + Copy> Grid<T> {
         }
     }
 
+    pub fn new_with_element(x: i64, y: i64, e: T) -> Self {
+        Grid {
+            elements: vec![e; (x * y) as usize],
+            size: Point::new(x, y),
+        }
+    }
+
     pub fn new_from_size(size: &Point) -> Self {
         Grid {
             elements: vec![T::default(); (size.x * size.y) as usize],
@@ -124,6 +134,17 @@ impl<T: Default + Copy> Grid<T> {
             self[*index]
         } else {
             T::default()
+        }
+    }
+}
+
+impl<T: Display> Grid<T> {
+    pub fn print(&self) {
+        for j in 0..self.size.y {
+            for i in 0..self.size.x {
+                print!("{}", self.elements[self.calculate_index(&Point::new(i, j))]);
+            }
+            println!();
         }
     }
 }
