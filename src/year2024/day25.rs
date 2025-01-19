@@ -1,12 +1,12 @@
 type Pins = [u8; 5];
 
 #[derive(Debug)]
-struct Input {
+pub struct Input {
     locks: Vec<Pins>,
     keys: Vec<Pins>,
 }
 
-fn parse(input: &str) -> Input {
+pub fn parse(input: &str) -> Input {
     let mut locks = Vec::new();
     let mut keys = Vec::new();
     input.split("\n\n").for_each(|s| {
@@ -47,8 +47,7 @@ fn compatible(lock: &Pins, key: &Pins) -> bool {
     true
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let input = parse(input);
+pub fn solve_part_one(input: &Input) -> usize {
     let mut res = 0;
 
     for lock in &input.locks {
@@ -59,28 +58,36 @@ pub fn solve_part_one(input: &str) -> usize {
         }
     }
 
-    println!("{:?}", input);
-
     res
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    todo!()
+pub fn solve_part_two(input: &Input) -> usize {
+    0
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day25.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day25/input.txt").unwrap());
-        assert_eq!(0, result);
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
+        assert_eq!(3, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two("");
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }
