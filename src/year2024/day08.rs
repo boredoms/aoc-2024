@@ -2,9 +2,11 @@ use std::collections::{HashMap, HashSet};
 
 use crate::util::grid::Grid;
 
-pub fn solve_part_one(input: &str) -> usize {
-    let input = Grid::from_str(input);
+pub fn parse(input: &str) -> Grid<u8> {
+    Grid::from_str(input)
+}
 
+pub fn solve_part_one(input: &Grid<u8>) -> usize {
     let mut unique = HashSet::new();
 
     input.elements.iter().for_each(|c| {
@@ -45,9 +47,7 @@ pub fn solve_part_one(input: &str) -> usize {
     antinodes.len()
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let input = Grid::from_str(input);
-
+pub fn solve_part_two(input: &Grid<u8>) -> usize {
     let mut unique = HashSet::new();
 
     input.elements.iter().for_each(|c| {
@@ -97,15 +97,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day08.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day8/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(14, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day8/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(34, result);
     }
 }

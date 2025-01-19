@@ -1,4 +1,6 @@
-fn expand(input: &str) -> Vec<Option<u32>> {
+type Input = Vec<Option<u32>>;
+
+pub fn parse(input: &str) -> Input {
     let len: usize = input.chars().fold(0, |sum, x| {
         sum + (x.to_digit(10).unwrap_or_default() as usize)
     });
@@ -24,8 +26,8 @@ fn expand(input: &str) -> Vec<Option<u32>> {
     expanded
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let mut expanded = expand(input);
+pub fn solve_part_one(input: &Input) -> usize {
+    let mut expanded = input.clone();
 
     // defragment
     let mut head: usize = 0;
@@ -64,8 +66,8 @@ pub fn solve_part_one(input: &str) -> usize {
     checksum
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let mut expanded = expand(input);
+pub fn solve_part_two(input: &Input) -> usize {
+    let mut expanded = input.clone();
 
     // defragment
     let mut head: usize = 0;
@@ -147,15 +149,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day09.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day9/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(1928, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day9/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(2858, result);
     }
 }
