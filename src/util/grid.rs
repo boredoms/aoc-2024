@@ -1,5 +1,5 @@
 use std::{
-    fmt::Display,
+    fmt::Debug,
     ops::{Index, IndexMut},
 };
 
@@ -138,11 +138,14 @@ impl<T: Default + Copy> Grid<T> {
     }
 }
 
-impl<T: Display> Grid<T> {
+impl<T: Debug> Grid<T> {
     pub fn print(&self) {
         for j in 0..self.size.y {
             for i in 0..self.size.x {
-                print!("{}", self.elements[self.calculate_index(&Point::new(i, j))]);
+                print!(
+                    "{:?}",
+                    self.elements[self.calculate_index(&Point::new(i, j))]
+                );
             }
             println!();
         }
@@ -165,6 +168,18 @@ impl Grid<u8> {
         Grid {
             elements,
             size: Point::new(width as i64, height as i64),
+        }
+    }
+
+    pub fn print_chars(&self) {
+        for j in 0..self.size.y {
+            for i in 0..self.size.x {
+                print!(
+                    "{}",
+                    self.elements[self.calculate_index(&Point::new(i, j))] as char
+                );
+            }
+            println!();
         }
     }
 }
