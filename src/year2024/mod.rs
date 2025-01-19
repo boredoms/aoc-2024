@@ -1,5 +1,7 @@
 pub mod day01;
 pub mod day02;
+pub mod day03;
+pub mod day04;
 pub mod day10;
 pub mod day11;
 pub mod day12;
@@ -16,8 +18,6 @@ pub mod day22;
 pub mod day23;
 pub mod day24;
 pub mod day25;
-pub mod day3;
-pub mod day4;
 pub mod day5;
 pub mod day6;
 pub mod day7;

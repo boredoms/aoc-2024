@@ -1,4 +1,4 @@
-struct Grid {
+pub struct Grid {
     chars: Vec<char>,
     size: Index,
 }
@@ -67,7 +67,7 @@ impl Direction {
     }
 }
 
-fn parse(input: &str) -> Grid {
+pub fn parse(input: &str) -> Grid {
     let y = input.lines().count() as i32;
     let x = input.split_once('\n').unwrap().0.len() as i32;
     let chars: Vec<char> = input.lines().flat_map(|line| line.chars()).collect();
@@ -118,8 +118,7 @@ fn grid_search(grid: &Grid, index: &Index, needle: &[char]) -> usize {
     }
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let grid = parse(input);
+pub fn solve_part_one(grid: &Grid) -> usize {
     let needle = vec!['X', 'M', 'A', 'S'];
 
     (0..grid.num_chars())
@@ -149,9 +148,7 @@ fn x_search(grid: &Grid, index: &Index) -> usize {
     0
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let grid = parse(input);
-
+pub fn solve_part_two(grid: &Grid) -> usize {
     (0..grid.num_chars())
         .map(|i| x_search(&grid, &grid.to_index(i as i32)))
         .sum()
@@ -161,16 +158,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day04.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day4/test.txt").unwrap());
-        // let result = solve_part_one("XMAS\n");
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(18, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day4/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(9, result);
     }
 }
