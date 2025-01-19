@@ -1,4 +1,4 @@
-use std::{cell::Cell, collections::HashSet, hash::Hash, str::FromStr};
+use std::{collections::HashSet, hash::Hash, str::FromStr};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 enum Guard {
