@@ -38,6 +38,6 @@ macro_rules! benchmark_year {
     };
 }
 
-benchmark_year!(year2024; day01, day02, day03, day04);
+benchmark_year!(year2024; day01, day02, day03, day04, day05);
 
 criterion_main!(year2024::benches);

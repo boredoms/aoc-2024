@@ -3,12 +3,12 @@ use std::{cmp, collections::HashMap};
 type Ordering = HashMap<(u32, u32), cmp::Ordering>;
 
 #[derive(Debug, Clone)]
-struct Input {
+pub struct Input {
     pages: Vec<Vec<u32>>,
     ordering: Ordering,
 }
 
-fn parse(input: &str) -> Input {
+pub fn parse(input: &str) -> Input {
     let (rules, pages) = input.split_once("\n\n").unwrap();
 
     let mut ordering = HashMap::new();
@@ -48,9 +48,7 @@ fn is_ordered(pages: &[u32], ordering: &Ordering) -> bool {
     })
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let input = parse(input);
-
+pub fn solve_part_one(input: &Input) -> usize {
     input
         .pages
         .iter()
@@ -59,11 +57,10 @@ pub fn solve_part_one(input: &str) -> usize {
         .sum::<u32>() as usize
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let mut input = parse(input);
-
+pub fn solve_part_two(input: &Input) -> usize {
     input
         .pages
+        .clone()
         .iter_mut()
         .filter(|pages| !is_ordered(pages, &input.ordering))
         .map(|pages| {
@@ -84,15 +81,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day05.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day5/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(143, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day5/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(123, result);
     }
 }
