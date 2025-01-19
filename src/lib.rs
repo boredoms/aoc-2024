@@ -1,6 +1,7 @@
+use std::path::{Path, PathBuf};
+
 use clap::{Parser, ValueEnum};
 
-pub mod commands;
 pub mod solvers;
 
 pub mod util {
@@ -24,15 +25,34 @@ pub struct Args {
     pub download_flag: Option<bool>,
 }
 
+// a problem consists of a day, year and a closure to execute
 #[derive(Debug)]
 struct Problem {
-    test_data: String,
-    test_solution: String,
-    input: String,
+    year: u16,
+    day: u8,
+    path: PathBuf,
+    task: fn(String) -> (usize, usize),
 }
 
-#[derive(Debug)]
-struct Day {
-    day: u8,
-    problem: Problem,
+macro_rules! problem {
+    ($year:tt, $day:tt) => {
+        fn $year() -> Problem {
+            Problem {
+                year: 0,
+                day: 0,
+                path: Path::new("data").to_owned(),
+                task: |s| {
+                    use solvers::$day::*;
+
+                    (solve_part_one(&s), solve_part_two(&s))
+                },
+            }
+        }
+    };
+}
+
+problem! {yongus, day01}
+
+fn bap() {
+    let p = yongus();
 }
