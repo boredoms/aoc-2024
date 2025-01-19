@@ -9,12 +9,12 @@ macro_rules! benchmark_year {
 
             $(
             pub fn $day(c: &mut Criterion) {
-                static DAY: &str = stringify!($day);
-
                 use std::fs::read_to_string;
                 use rust_aoc::$year::$day::{parse, solve_part_one, solve_part_two};
 
-                let path = "data/".to_owned() + stringify!($day) + "/input.txt";
+                static DAY: &str = stringify!($day);
+
+                let path = "data/input/".to_owned() + stringify!($year) + "/" + stringify!($day) + ".txt";
 
                 let input = read_to_string(path).unwrap();
 
@@ -38,6 +38,6 @@ macro_rules! benchmark_year {
     };
 }
 
-benchmark_year!(year2024; day01, day02);
+benchmark_year!(year2024; day01, day02, day03, day04);
 
 criterion_main!(year2024::benches);
