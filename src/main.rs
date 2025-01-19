@@ -1,14 +1,10 @@
 use clap::Parser;
-use rust_aoc::{commands::init::init, commands::run::run, Args, Command};
+use rust_aoc::{solvers::day15, Args};
 
 fn main() {
     let args = Args::parse();
 
-    match args.command {
-        Command::Init => init(args.day),
-        Command::Run => run(args.day.into()),
-        _ => todo!("Not implemented."),
-    }
-
     println!("{:?}", args);
+
+    day15::solve_part_two(&std::fs::read_to_string("data/day15/test.txt").unwrap());
 }
