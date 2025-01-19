@@ -1,11 +1,13 @@
 use std::mem::swap;
 
-struct Equation {
+pub struct Equation {
     result: i64,
     operands: Vec<i64>,
 }
 
-fn parse(input: &str) -> Vec<Equation> {
+type Input = Vec<Equation>;
+
+pub fn parse(input: &str) -> Input {
     input
         .lines()
         .map(|line| {
@@ -68,9 +70,7 @@ fn is_possible_2(eq: &Equation) -> bool {
     false
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let input = parse(input);
-
+pub fn solve_part_one(input: &Input) -> usize {
     let mut res: i64 = 0;
 
     for eq in input.iter() {
@@ -81,9 +81,7 @@ pub fn solve_part_one(input: &str) -> usize {
     res as usize
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let input = parse(input);
-
+pub fn solve_part_two(input: &Input) -> usize {
     let mut res: i64 = 0;
 
     for eq in input.iter() {
@@ -99,15 +97,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day07.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day7/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(3749, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day7/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(11387, result);
     }
 }
