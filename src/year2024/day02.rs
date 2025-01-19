@@ -1,8 +1,8 @@
-struct Input {
+pub struct Input {
     lists: Vec<Vec<i32>>,
 }
 
-fn parse(input: &str) -> Input {
+pub fn parse(input: &str) -> Input {
     let lists = input
         .lines()
         .map(|line| {
@@ -30,19 +30,14 @@ fn generate_sublists(list: &[i32]) -> impl Iterator<Item = Vec<i32>> + '_ {
     })
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let input = parse(input);
-
-    input.lists.into_iter().filter(|list| is_safe(list)).count()
+pub fn solve_part_one(input: &Input) -> usize {
+    input.lists.iter().filter(|list| is_safe(list)).count()
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    // solution goes here
-    let input = parse(input);
-
+pub fn solve_part_two(input: &Input) -> usize {
     input
         .lists
-        .into_iter()
+        .iter()
         .filter(|list| generate_sublists(list).any(|l| is_safe(&l)))
         .count()
 }
@@ -51,15 +46,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day02.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day2/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(2, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day2/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(4, result);
     }
 }
