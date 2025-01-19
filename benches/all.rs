@@ -12,7 +12,7 @@ macro_rules! benchmark_year {
                 static DAY: &str = stringify!($day);
 
                 use std::fs::read_to_string;
-                use rust_aoc::solvers::$day::{parse, solve_part_one, solve_part_two};
+                use rust_aoc::$year::$day::{parse, solve_part_one, solve_part_two};
 
                 let path = "data/".to_owned() + stringify!($day) + "/input.txt";
 
@@ -23,10 +23,12 @@ macro_rules! benchmark_year {
                 });
 
                 c.bench_function(&format!("{}: Part 1", DAY), |b| {
+                    let input = parse(&input);
                     b.iter(|| solve_part_one(black_box(&input)))
                 });
 
                 c.bench_function(&format!("{}: Part 2", DAY), |b| {
+                    let input = parse(&input);
                     b.iter(|| solve_part_two(black_box(&input)))
                 });
             })*
