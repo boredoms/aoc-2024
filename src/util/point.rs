@@ -33,6 +33,16 @@ impl Point {
     pub fn manhattan(&self, other: &Point) -> i64 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
+
+    pub fn from_u8(char: u8) -> Self {
+        match char {
+            b'^' => UP,
+            b'v' => DOWN,
+            b'<' => LEFT,
+            b'>' => RIGHT,
+            _ => panic!("character not recognized"),
+        }
+    }
 }
 
 impl Add for Point {
