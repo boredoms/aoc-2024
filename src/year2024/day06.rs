@@ -51,7 +51,7 @@ impl FromStr for Guard {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 enum CellState {
     Empty,
     Blocked,
@@ -66,7 +66,8 @@ impl ToString for CellState {
     }
 }
 
-struct Map {
+#[derive(Debug, Clone)]
+pub struct Map {
     grid: Vec<CellState>,
     grid_size: (i32, i32),
     starting_position: (i32, i32),
@@ -178,7 +179,7 @@ fn valid_position(pos: &(i32, i32), size: &(i32, i32)) -> bool {
     pos.0 >= 0 && pos.1 >= 0 && pos.0 < size.0 && pos.1 < size.1
 }
 
-fn parse(input: &str) -> Map {
+pub fn parse(input: &str) -> Map {
     let grid_size = (
         input.lines().next().unwrap().len() as i32,
         input.lines().count() as i32,
@@ -219,8 +220,8 @@ fn parse(input: &str) -> Map {
     }
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let mut map = parse(input);
+pub fn solve_part_one(input: &Map) -> usize {
+    let mut map = input.clone();
 
     while map.move_guard().is_ok() {}
 
@@ -233,8 +234,8 @@ pub fn solve_part_one(input: &str) -> usize {
     unique.len()
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let mut map = parse(input);
+pub fn solve_part_two(input: &Map) -> usize {
+    let mut map = input.clone();
 
     while map.move_guard().is_ok() {}
 
@@ -259,15 +260,25 @@ pub fn solve_both(input: &str) -> (usize, usize) {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day06.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day6/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(41, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day6/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(6, result);
     }
 }
