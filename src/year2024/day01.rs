@@ -1,4 +1,5 @@
-use std::{collections::HashMap, iter::zip};
+use rustc_hash::FxHashMap;
+use std::iter::zip;
 
 type Input = (Vec<u32>, Vec<u32>);
 
@@ -18,8 +19,8 @@ pub fn parse(input: &str) -> Input {
 pub fn solve_part_one(input: &Input) -> u32 {
     let (mut left, mut right) = input.clone();
 
-    left.sort();
-    right.sort();
+    left.sort_unstable();
+    right.sort_unstable();
 
     zip(left, right).map(|(a, b)| a.abs_diff(b)).sum()
 }
@@ -27,7 +28,7 @@ pub fn solve_part_one(input: &Input) -> u32 {
 pub fn solve_part_two(input: &Input) -> u32 {
     let (left, right) = input;
 
-    let mut counts: HashMap<u32, u32> = HashMap::new();
+    let mut counts = FxHashMap::default();
 
     right.iter().for_each(|x| {
         *counts.entry(*x).or_default() += 1;
