@@ -8,6 +8,17 @@ pub struct Equation {
 
 type Input = Vec<Equation>;
 
+#[inline]
+fn next_power_of_ten(n: i64) -> i64 {
+    if n < 10 {
+        10
+    } else if n < 100 {
+        100
+    } else {
+        1000
+    }
+}
+
 pub fn parse(input: &str) -> Input {
     input
         .lines()
@@ -84,7 +95,7 @@ fn is_possible_2(eq: &Equation) -> bool {
         for c in &candidates {
             next.push(c * i);
             next.push(c + i);
-            next.push((c.to_string() + &i.to_string()).parse::<i64>().unwrap());
+            next.push(c * next_power_of_ten(*i) + i);
         }
 
         candidates.clear();
