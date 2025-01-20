@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-fn parse(input: &str) -> Vec<u64> {
+type Input = Vec<u64>;
+
+pub fn parse(input: &str) -> Input {
     input.split(' ').map(|c| c.parse().unwrap()).collect()
 }
 
@@ -169,31 +171,37 @@ fn blink(stones: &mut Vec<u64>) {
     stones.extend_from_slice(&temp);
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let stones = parse(input);
-
-    blink_memoized(&stones, 25)
+pub fn solve_part_one(input: &Input) -> usize {
+    blink_memoized(&input, 25)
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let stones = parse(input);
-
-    blink_memoized(&stones, 75)
+pub fn solve_part_two(input: &Input) -> usize {
+    blink_memoized(&input, 75)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day11.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day11/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(55312, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day11/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(0, result);
     }
 }

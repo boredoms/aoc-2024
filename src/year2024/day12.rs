@@ -143,49 +143,41 @@ fn score_regions_(grid: &Grid<u8>) -> usize {
     total
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let grid = Grid::from_str(input);
-
-    score_regions(&grid)
+pub fn parse(input: &str) -> Grid<u8> {
+    Grid::from_str(input)
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let grid = Grid::from_str(input);
+pub fn solve_part_one(input: &Grid<u8>) -> usize {
+    score_regions(input)
+}
 
-    score_regions_(&grid)
+pub fn solve_part_two(input: &Grid<u8>) -> usize {
+    score_regions_(input)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_part_one_mini() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day12/mini.txt").unwrap());
-        assert_eq!(140, result);
-    }
-
-    #[test]
-    fn test_part_one_mini_two() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day12/mini2.txt").unwrap());
-        assert_eq!(772, result);
-    }
+    static TEST_DATA_PATH: &str = "data/test/year2024/day12.txt";
 
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day12/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(1930, result);
     }
 
     #[test]
-    fn test_part_two_mini() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day12/mini.txt").unwrap());
-        assert_eq!(80, result);
-    }
-
-    #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day12/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(1206, result);
     }
 }

@@ -178,6 +178,10 @@ fn calculate_costs(seq: &str, paths: &HashMap<(char, char), Vec<String>>, depth:
     total
 }
 
+pub fn parse<'a>(input: &'a str) -> &'a str {
+    input
+}
+
 pub fn solve_part_one(input: &str) -> usize {
     let paths = calculate_paths();
 
@@ -222,15 +226,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day21.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day21/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(0, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day21/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }

@@ -1,16 +1,16 @@
-use std::io::{self, Stdin};
-
 use regex::Regex;
 
 use crate::util::{grid::Grid, point::Point};
 
 #[derive(Debug)]
-struct Robot {
+pub struct Robot {
     p: Point,
     v: Point,
 }
 
-fn parse(input: &str) -> Vec<Robot> {
+type Input = Vec<Robot>;
+
+pub fn parse(input: &str) -> Vec<Robot> {
     let re = Regex::new(r"p=(\d+),(\d+) v=(\-*\d+),(\-*\d+)").unwrap();
     let mut res = Vec::new();
 
@@ -48,7 +48,7 @@ fn move_robot(robot: &Robot, room_size: &Point, seconds: i64) -> Point {
 // |-+-|
 // |2|3|
 // +---+
-fn quadrant(mut pos: Point, room_size: &Point) -> Option<usize> {
+fn quadrant(pos: Point, room_size: &Point) -> Option<usize> {
     let half_x = room_size.x / 2;
     let half_y = room_size.y / 2;
 
@@ -73,8 +73,7 @@ fn quadrant(mut pos: Point, room_size: &Point) -> Option<usize> {
     None
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let robots = parse(input);
+pub fn solve_part_one(input: &Input) -> usize {
     let seconds = 100;
     let room_size = Point::new(101, 103);
 
@@ -82,7 +81,7 @@ pub fn solve_part_one(input: &str) -> usize {
 
     let mut quadrant_counts = vec![0; 4];
 
-    robots
+    input
         .iter()
         .map(|robot| move_robot(robot, &room_size, seconds))
         // .inspect(|p| println!("{:?}", p))
@@ -102,12 +101,6 @@ fn print_robots(robots: &Vec<Point>) {
     }
 
     grid.print();
-}
-
-fn find_tree(robots: &Vec<Robot>) -> usize {
-    let mut seconds = 0;
-
-    0
 }
 
 fn scan_clusters(points: Vec<Point>, room_size: &Point) -> bool {
@@ -131,30 +124,19 @@ fn scan_clusters(points: Vec<Point>, room_size: &Point) -> bool {
     false
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let robots = parse(input);
+pub fn solve_part_two(input: &Input) -> usize {
     let mut i = 0;
     let room_size = Point::new(101, 103);
 
     while !scan_clusters(
-        robots
+        input
             .iter()
             .map(|robot| move_robot(robot, &room_size, i))
             .collect(),
         &room_size,
     ) {
-        println!("{i}");
         i += 1;
     }
-
-    print_robots(
-        &robots
-            .iter()
-            .map(|robot| move_robot(robot, &room_size, i))
-            .collect(),
-    );
-
-    println!("{i}");
 
     i as usize
 }
@@ -163,15 +145,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day14.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day14/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(12, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day14/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }

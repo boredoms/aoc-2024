@@ -4,7 +4,11 @@ use std::{
     mem::swap,
 };
 
-pub fn parse(input: &str) -> HashMap<String, Vec<String>> {
+pub fn parse<'a>(input: &'a str) -> &'a str {
+    input
+}
+
+fn parse_graph(input: &str) -> HashMap<String, Vec<String>> {
     let mut graph: HashMap<String, Vec<String>> = HashMap::new();
 
     input.lines().for_each(|line| {
@@ -21,7 +25,7 @@ pub fn parse(input: &str) -> HashMap<String, Vec<String>> {
 }
 
 pub fn solve_part_one(input: &str) -> usize {
-    let graph = parse(input);
+    let graph = parse_graph(input);
 
     let mut wedges: HashMap<String, Vec<String>> = HashMap::new();
 
@@ -97,7 +101,7 @@ fn bron_kerbosch(
 }
 
 pub fn solve_part_two(input: &str) -> usize {
-    let graph = parse(input);
+    let graph = parse_graph(input);
     let mut res = Vec::new();
     let p = HashSet::from_iter(graph.keys().cloned());
 
@@ -112,15 +116,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day23.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day23/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(7, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day23/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }

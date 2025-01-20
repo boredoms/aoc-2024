@@ -1,7 +1,6 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fmt,
-};
+use std::collections::{HashMap, HashSet};
+
+type Input = Vec<u32>;
 
 fn hash(x: u32) -> u32 {
     let mask = 0xffffff;
@@ -56,12 +55,12 @@ fn handle_monkey(d: Vec<(u32, i32)>, prices: &mut HashMap<String, u32>) {
     }
 }
 
-fn parse(input: &str) -> Vec<u32> {
+pub fn parse(input: &str) -> Vec<u32> {
     input.lines().map(|line| line.parse().unwrap()).collect()
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let numbers = parse(input);
+pub fn solve_part_one(input: &Input) -> usize {
+    let numbers = input;
 
     numbers.iter().fold(0, |sum, n| {
         let mut n = *n;
@@ -72,13 +71,13 @@ pub fn solve_part_one(input: &str) -> usize {
     })
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let numbers = parse(input);
+pub fn solve_part_two(input: &Input) -> usize {
+    let numbers = input;
 
     let mut res = HashMap::new();
 
     for i in numbers {
-        let v = create_difference_vector(i);
+        let v = create_difference_vector(*i);
 
         handle_monkey(v, &mut res);
     }
@@ -101,15 +100,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day22.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day22/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(37327623, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day22/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(23, result);
     }
 }

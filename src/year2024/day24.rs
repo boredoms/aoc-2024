@@ -3,13 +3,13 @@ use std::{
     mem::swap,
 };
 
-#[derive(Debug)]
-struct Input {
+#[derive(Debug, Clone)]
+pub struct Input {
     values: HashMap<String, u8>,
     operations: Vec<(String, String, String, String)>,
 }
 
-fn parse(input: &str) -> Input {
+pub fn parse(input: &str) -> Input {
     let (initial, ops) = input.split_once("\n\n").unwrap();
 
     let mut values = HashMap::new();
@@ -126,8 +126,8 @@ fn set_values(values: &mut HashMap<String, u8>, mut x: u64, mut y: u64) {
     }
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let mut input = parse(input);
+pub fn solve_part_one(input: &Input) -> usize {
+    let mut input = input.clone();
 
     solve(&mut input.values, &input.operations);
 
@@ -260,8 +260,8 @@ fn validate_adder(ops: &Vec<(String, String, String, String)>) -> Vec<String> {
 
 // z39 and wtt
 
-pub fn solve_part_two(input: &str) -> usize {
-    let mut input = parse(input);
+pub fn solve_part_two(input: &Input) -> usize {
+    let mut input = input.clone();
 
     validate_adder(&input.operations);
 
@@ -301,15 +301,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day23.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day24/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(2024, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day24/input_1.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }

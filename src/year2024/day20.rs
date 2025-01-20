@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::util::{grid::Grid, point::Point, point::CARDINALS};
 
-fn parse(input: &str) -> Grid<u8> {
+pub fn parse(input: &str) -> Grid<u8> {
     Grid::from_str(input)
 }
 
@@ -45,17 +45,16 @@ impl Iterator for ManhattanIterator {
     }
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let grid = parse(input);
-    let start = grid.find(|c| *c == b'S').unwrap();
-    let end = grid.find(|c| *c == b'E').unwrap();
+pub fn solve_part_one(input: &Grid<u8>) -> usize {
+    let start = input.find(|c| *c == b'S').unwrap();
+    let end = input.find(|c| *c == b'E').unwrap();
 
     let mut current = start;
     let mut distance = 0;
 
     let mut count = 0;
 
-    let mut visited = Grid::new_with_same_size(&grid);
+    let mut visited = Grid::new_with_same_size(&input);
     visited[start] = Some(distance);
 
     // walk through grid from start
@@ -65,7 +64,7 @@ pub fn solve_part_one(input: &str) -> usize {
         // assumption: the path is unique
         for d in CARDINALS {
             // don't need to check for validity, because of the border
-            if (grid[current + d] == b'.' || grid[current + d] == b'E')
+            if (input[current + d] == b'.' || input[current + d] == b'E')
                 && visited[current + d].is_none()
             {
                 current += d;
@@ -88,7 +87,7 @@ pub fn solve_part_one(input: &str) -> usize {
 
         for d in CARDINALS {
             let candidate = current + d + d;
-            if grid.in_grid(&candidate)
+            if input.in_grid(&candidate)
 //                && grid[current + d] == b'#' don't need to check for this
                 && visited[candidate].is_some()
             {
@@ -96,11 +95,6 @@ pub fn solve_part_one(input: &str) -> usize {
                     if distance - distance_previous - 2 >= 100 {
                         count += 1;
                     }
-                    // println!(
-                    //     "Shortcut at {:?} of length {}",
-                    //     current,
-                    //     distance - distance_previous - 2
-                    // );
                 }
             }
         }
@@ -109,8 +103,8 @@ pub fn solve_part_one(input: &str) -> usize {
     count
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let grid = parse(input);
+pub fn solve_part_two(input: &Grid<u8>) -> usize {
+    let grid = input;
     let start = grid.find(|c| *c == b'S').unwrap();
     let end = grid.find(|c| *c == b'E').unwrap();
 
@@ -188,15 +182,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day20.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day20/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(0, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day20/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }

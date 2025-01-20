@@ -3,7 +3,7 @@ use regex::Regex;
 use crate::util::point::Point;
 
 #[derive(Debug)]
-struct Equation {
+pub struct Equation {
     a: Point,
     b: Point,
     z: Point,
@@ -15,7 +15,9 @@ fn parse_point(desc: &str, re: &Regex) -> Point {
     Point::new(caps[1].parse().unwrap(), caps[2].parse().unwrap())
 }
 
-fn parse(input: &str) -> Vec<Equation> {
+type Input = Vec<Equation>;
+
+pub fn parse(input: &str) -> Input {
     let mut it = input.lines();
     let mut res = Vec::new();
 
@@ -56,21 +58,18 @@ fn solve_equation(eq: &Equation) -> Option<(i64, i64)> {
     }
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let equations = parse(input);
-
-    equations
+pub fn solve_part_one(input: &Input) -> usize {
+    input
         .iter()
         .filter_map(|eq| solve_equation(eq))
         .map(|(x, y)| 3 * x + y)
         .sum::<i64>() as usize
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let equations = parse(input);
+pub fn solve_part_two(input: &Input) -> usize {
     let adjustment = Point::new(10000000000000, 10000000000000);
 
-    equations
+    input
         .iter()
         .filter_map(|eq| {
             let new_eq = Equation {
@@ -87,15 +86,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day13.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day13/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(480, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day13/test.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(875318608908, result);
     }
 }

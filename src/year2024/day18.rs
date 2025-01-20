@@ -5,7 +5,11 @@ use crate::util::{
     point::{Point, CARDINALS},
 };
 
-fn parse(input: &str, size: Point, num_fallen: usize) -> Grid<u8> {
+pub fn parse<'a>(input: &'a str) -> &'a str {
+    input
+}
+
+fn parse_(input: &str, size: Point, num_fallen: usize) -> Grid<u8> {
     let mut grid = Grid::new_with_element(size.x, size.y, b'.');
 
     input.lines().take(num_fallen).for_each(|line| {
@@ -57,12 +61,12 @@ fn bfs(grid: &Grid<u8>) -> Option<usize> {
 }
 
 pub fn solve_part_one(input: &str) -> usize {
-    let grid = parse(input, Point::new(71, 71), 1024);
+    let grid = parse_(input, Point::new(71, 71), 1024);
     bfs(&grid).unwrap()
 }
 
 pub fn solve_part_two(input: &str) -> usize {
-    let mut grid = parse(input, Point::new(71, 71), 1024);
+    let mut grid = parse_(input, Point::new(71, 71), 1024);
 
     for line in input.lines().skip(1024) {
         // place the tile
@@ -85,15 +89,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day18.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day18/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(22, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day18/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-#[derive(Debug)]
-struct Computer {
+#[derive(Debug, Clone)]
+pub struct Computer {
     a: u64,
     b: u64,
     c: u64,
@@ -109,7 +109,7 @@ impl Computer {
     }
 }
 
-fn parse(input: &str) -> Computer {
+pub fn parse(input: &str) -> Computer {
     let mut it = input.lines();
 
     let a = it
@@ -163,8 +163,8 @@ fn parse(input: &str) -> Computer {
     }
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let mut computer = parse(input);
+pub fn solve_part_one(input: &Computer) -> usize {
+    let mut computer = input.clone();
 
     computer.run();
 
@@ -232,8 +232,8 @@ fn tree_search(c: &mut Computer, depth: i64) -> Option<u64> {
     min
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let mut computer = parse(input);
+pub fn solve_part_two(input: &Computer) -> usize {
+    let mut computer = input.clone();
 
     computer.a = 0;
 
@@ -246,15 +246,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day17.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day17/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(0, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day17/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(117440, result);
     }
 }

@@ -5,14 +5,18 @@ use crate::util::{
     point::{Point, LEFT, RIGHT},
 };
 
-#[derive(Debug)]
-struct Input {
+#[derive(Debug, Clone)]
+pub struct Input {
     pos: Point,
     grid: Grid<u8>,
     moves: Vec<u8>,
 }
 
-fn parse(input: &str) -> Input {
+pub fn parse<'a>(input: &'a str) -> &'a str {
+    input
+}
+
+pub fn parse_(input: &str) -> Input {
     let (grid, moves) = input.split_once("\n\n").unwrap();
 
     let grid = Grid::from_str(grid);
@@ -167,7 +171,7 @@ fn score(grid: Grid<u8>) -> usize {
 }
 
 pub fn solve_part_one(input: &str) -> usize {
-    let mut input = parse(input);
+    let mut input = parse_(input);
 
     input
         .moves
@@ -180,16 +184,8 @@ pub fn solve_part_one(input: &str) -> usize {
 pub fn solve_part_two(input: &str) -> usize {
     let mut input = expand(input);
 
-    input.grid.print_chars();
-    let mut i = 0;
-
     for ele in input.moves.iter() {
         attempt_move_wide(&mut input.grid, &mut input.pos, Point::from_u8(*ele));
-
-        //println!("{i}: {}", *ele as char);
-        //input.grid.print_chars();
-
-        i += 1;
     }
 
     score(input.grid)
@@ -199,15 +195,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day15.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day15/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(0, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day15/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }

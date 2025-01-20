@@ -5,6 +5,10 @@ use crate::util::{
     point::{Point, CARDINALS},
 };
 
+pub fn parse(input: &str) -> Grid<u8> {
+    Grid::from_str(input)
+}
+
 pub fn score(grid: &Grid<u8>, p: Point) -> usize {
     let mut level = grid[p];
     let mut curr = HashSet::from([p]);
@@ -54,9 +58,7 @@ pub fn rate(grid: &Grid<u8>, p: Point) -> usize {
     res
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let grid = Grid::from_str(input);
-
+pub fn solve_part_one(grid: &Grid<u8>) -> usize {
     let mut res = 0;
 
     let starting_points = grid.find_all(|c| *c == b'0');
@@ -69,16 +71,13 @@ pub fn solve_part_one(input: &str) -> usize {
     res
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let grid = Grid::from_str(input);
-
+pub fn solve_part_two(grid: &Grid<u8>) -> usize {
     let mut res = 0;
 
     let starting_points = grid.find_all(|c| *c == b'0');
 
     for p in starting_points {
         let s = rate(&grid, p);
-        println!("{:?}: {s}", p);
         res += s;
     }
 
@@ -89,15 +88,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day10.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day10/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(36, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day10/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(81, result);
     }
 }

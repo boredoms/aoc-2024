@@ -1,10 +1,10 @@
 #[derive(Debug)]
-struct Input {
+pub struct Input {
     patterns: Vec<String>,
     designs: Vec<String>,
 }
 
-fn parse(input: &str) -> Input {
+pub fn parse(input: &str) -> Input {
     let mut iter = input.lines();
 
     let patterns = iter
@@ -50,9 +50,7 @@ fn assemble(patterns: &Vec<String>, design: &String) -> usize {
     *reachable.last().unwrap()
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let input = parse(input);
-
+pub fn solve_part_one(input: &Input) -> usize {
     input
         .designs
         .iter()
@@ -61,9 +59,7 @@ pub fn solve_part_one(input: &str) -> usize {
         .count()
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let input = parse(input);
-
+pub fn solve_part_two(input: &Input) -> usize {
     input
         .designs
         .iter()
@@ -75,15 +71,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day19.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day19/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(6, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day19/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(16, result);
     }
 }

@@ -1,21 +1,20 @@
-use std::{cmp, collections::VecDeque, mem::swap};
+use std::{collections::VecDeque, mem::swap};
 
 use crate::util::{
     grid::Grid,
     point::{Point, CARDINALS, RIGHT},
 };
 
-fn parse(input: &str) -> Grid<u8> {
+pub fn parse(input: &str) -> Grid<u8> {
     Grid::from_str(input)
 }
 
-pub fn solve_part_one(input: &str) -> usize {
-    let grid = parse(input);
-    let start = Point::new(1, grid.size.y - 2);
-    let end = Point::new(grid.size.x - 2, 1);
+pub fn solve_part_one(input: &Grid<u8>) -> usize {
+    let start = Point::new(1, input.size.y - 2);
+    let end = Point::new(input.size.x - 2, 1);
     let starting_direction = RIGHT;
 
-    let mut visited = Grid::new_with_same_size(&grid);
+    let mut visited = Grid::new_with_same_size(&input);
     visited[start] = true;
 
     let mut queue: Vec<Vec<(Point, Point)>> = vec![Vec::new(); 1001];
@@ -38,8 +37,8 @@ pub fn solve_part_one(input: &str) -> usize {
 
             for d in CARDINALS {
                 let candidate = pos + d;
-                if grid.in_grid(&candidate)
-                    && (grid[candidate] == b'.' || grid[candidate] == b'E')
+                if input.in_grid(&candidate)
+                    && (input[candidate] == b'.' || input[candidate] == b'E')
                     && !visited[candidate]
                 {
                     // valid step to take
@@ -58,13 +57,12 @@ pub fn solve_part_one(input: &str) -> usize {
     }
 }
 
-pub fn solve_part_two(input: &str) -> usize {
-    let grid = parse(input);
-    let start = Point::new(1, grid.size.y - 2);
-    let end = Point::new(grid.size.x - 2, 1);
+pub fn solve_part_two(input: &Grid<u8>) -> usize {
+    let start = Point::new(1, input.size.y - 2);
+    let end = Point::new(input.size.x - 2, 1);
     let starting_direction = RIGHT;
 
-    let mut visited = Grid::new_with_same_size(&grid);
+    let mut visited = Grid::new_with_same_size(input);
     visited[start] = Some((starting_direction, 0));
 
     let mut queue: Vec<Vec<(Point, Point)>> = vec![Vec::new(); 1001];
@@ -93,8 +91,8 @@ pub fn solve_part_two(input: &str) -> usize {
 
             for d in CARDINALS {
                 let candidate = pos + d;
-                if grid.in_grid(&candidate)
-                    && (grid[candidate] == b'.' || grid[candidate] == b'E')
+                if input.in_grid(&candidate)
+                    && (input[candidate] == b'.' || input[candidate] == b'E')
                     && visited[candidate].is_none()
                 {
                     // valid step to take
@@ -113,7 +111,7 @@ pub fn solve_part_two(input: &str) -> usize {
     }
 
     // search backward
-    let mut plot = parse(input);
+    let mut plot = input.clone();
     plot[end] = b'O';
 
     let mut queue = VecDeque::new();
@@ -132,8 +130,8 @@ pub fn solve_part_two(input: &str) -> usize {
 
             // if it is on a shortest path it needs to be
             // a valid field
-            if grid.in_grid(&candidate)
-                && (grid[candidate] == b'.' || grid[candidate] == b'S')
+            if input.in_grid(&candidate)
+                && (input[candidate] == b'.' || input[candidate] == b'S')
                 && visited[candidate].is_some()
                 && plot[candidate] != b'O'
             {
@@ -167,15 +165,25 @@ pub fn solve_part_two(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    static TEST_DATA_PATH: &str = "data/test/year2024/day16.txt";
+
     #[test]
     fn test_part_one() {
-        let result = solve_part_one(&std::fs::read_to_string("data/day16/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_one(&input);
+
         assert_eq!(0, result);
     }
 
     #[test]
     fn test_part_two() {
-        let result = solve_part_two(&std::fs::read_to_string("data/day16/input.txt").unwrap());
+        let input = &std::fs::read_to_string(TEST_DATA_PATH).expect("Test data does not exist.");
+
+        let input = parse(input);
+        let result = solve_part_two(&input);
+
         assert_eq!(0, result);
     }
 }
