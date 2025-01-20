@@ -1,5 +1,6 @@
 use std::mem::swap;
 
+#[derive(Debug)]
 pub struct Equation {
     result: i64,
     operands: Vec<i64>,
@@ -19,6 +20,34 @@ pub fn parse(input: &str) -> Input {
             }
         })
         .collect()
+}
+
+fn lower_bound(eq: &Equation) -> i64 {
+    let mut i = *eq.operands.first().unwrap();
+
+    for j in eq.operands.iter().skip(1) {
+        if *j == 1 || i == 1 {
+            continue;
+        } else {
+            i += j;
+        }
+    }
+
+    i
+}
+
+fn upper_bound(eq: &Equation) -> i64 {
+    let mut i = *eq.operands.first().unwrap();
+
+    for j in eq.operands.iter().skip(1) {
+        if *j == 1 || i == 1 {
+            i += j;
+        } else {
+            i *= j;
+        }
+    }
+
+    i
 }
 
 fn is_possible(eq: &Equation) -> bool {
@@ -74,6 +103,15 @@ pub fn solve_part_one(input: &Input) -> usize {
     let mut res: i64 = 0;
 
     for eq in input.iter() {
+        // these checks get rid of some equations immediately
+        if lower_bound(eq) > eq.result {
+            continue;
+        }
+
+        if upper_bound(eq) < eq.result {
+            continue;
+        }
+
         if is_possible(&eq) {
             res += eq.result;
         }
@@ -97,7 +135,7 @@ pub fn solve_part_two(input: &Input) -> usize {
 mod tests {
     use super::*;
 
-    static TEST_DATA_PATH: &str = "data/test/year2024/day07.txt";
+    static TEST_DATA_PATH: &str = "data/input/year2024/day07.txt";
 
     #[test]
     fn test_part_one() {
