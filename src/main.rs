@@ -1,10 +1,6 @@
-use std::str::FromStr;
+use std::{path::PathBuf, str::FromStr};
 
-use std::fmt::format;
-
-use std::path::Path;
-
-use rust_aoc::year2024::{self, day15};
+use rust_aoc::year2024;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum TestOrRun {
@@ -74,54 +70,50 @@ fn print_usage() {
     println!("  Usage: rust_aoc [run|test] [year:20XX] [day: YY]");
 }
 
-// TODO: make this work for windows
-fn create_filename(year: u32, day: u32, cmd: TestOrRun) -> String {
-    let mut filename = "data/".to_string();
-
-    filename += match cmd {
-        TestOrRun::Test => "test/",
-        TestOrRun::Run => "input/",
+fn create_filename(year: u32, day: u32, cmd: TestOrRun) -> PathBuf {
+    let t = match cmd {
+        TestOrRun::Test => "test",
+        TestOrRun::Run => "input",
         _ => unreachable!(),
     };
 
-    filename += &year.to_string();
-    filename += "/";
+    let y = "year".to_string() + &year.to_string();
+    let f = "day".to_string() + &format!("{:02}.txt", day);
 
-    filename += &format!("{:02}.txt", day);
-
-    filename
+    std::path::Path::new("data/").join(t).join(y).join(f)
 }
 
 fn dispatch(year: u32, day: u32, cmd: TestOrRun) -> Result<(String, String), String> {
-    let filename = create_filename(year, day, cmd);
+    let path = create_filename(year, day, cmd);
+    let filename = path.to_str().expect("path is valid unicode");
 
     match year {
         2024 => match day {
-            1 => year2024::day01::solve(&filename),
-            2 => year2024::day02::solve(&filename),
-            3 => year2024::day03::solve(&filename),
-            4 => year2024::day04::solve(&filename),
-            5 => year2024::day05::solve(&filename),
-            6 => year2024::day06::solve(&filename),
-            7 => year2024::day07::solve(&filename),
-            8 => year2024::day08::solve(&filename),
-            9 => year2024::day09::solve(&filename),
-            10 => year2024::day10::solve(&filename),
-            11 => year2024::day11::solve(&filename),
-            12 => year2024::day12::solve(&filename),
-            13 => year2024::day13::solve(&filename),
-            14 => year2024::day14::solve(&filename),
-            15 => year2024::day15::solve(&filename),
-            16 => year2024::day16::solve(&filename),
-            17 => year2024::day17::solve(&filename),
-            18 => year2024::day18::solve(&filename),
-            19 => year2024::day19::solve(&filename),
-            20 => year2024::day20::solve(&filename),
-            21 => year2024::day21::solve(&filename),
-            22 => year2024::day22::solve(&filename),
-            23 => year2024::day23::solve(&filename),
-            24 => year2024::day24::solve(&filename),
-            25 => year2024::day25::solve(&filename),
+            1 => year2024::day01::solve(filename),
+            2 => year2024::day02::solve(filename),
+            3 => year2024::day03::solve(filename),
+            4 => year2024::day04::solve(filename),
+            5 => year2024::day05::solve(filename),
+            6 => year2024::day06::solve(filename),
+            7 => year2024::day07::solve(filename),
+            8 => year2024::day08::solve(filename),
+            9 => year2024::day09::solve(filename),
+            10 => year2024::day10::solve(filename),
+            11 => year2024::day11::solve(filename),
+            12 => year2024::day12::solve(filename),
+            13 => year2024::day13::solve(filename),
+            14 => year2024::day14::solve(filename),
+            15 => year2024::day15::solve(filename),
+            16 => year2024::day16::solve(filename),
+            17 => year2024::day17::solve(filename),
+            18 => year2024::day18::solve(filename),
+            19 => year2024::day19::solve(filename),
+            20 => year2024::day20::solve(filename),
+            21 => year2024::day21::solve(filename),
+            22 => year2024::day22::solve(filename),
+            23 => year2024::day23::solve(filename),
+            24 => year2024::day24::solve(filename),
+            25 => year2024::day25::solve(filename),
             _ => Err(format!("day not implemented {}", day)),
         },
         _ => Err(format!("year not implemented {}", year)),
