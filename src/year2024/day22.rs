@@ -87,6 +87,18 @@ pub fn solve_part_two(input: &Input) -> usize {
     *res.iter().max_by_key(|s| s.1).unwrap().1 as usize
 }
 
+pub fn solve(filename: &str) -> Result<(String, String), String> {
+    let input =
+        &std::fs::read_to_string(filename).or(Err(format!("could not read file {}", filename)))?;
+
+    let input = parse(input);
+
+    Ok((
+        solve_part_one(&input).to_string(),
+        solve_part_two(&input).to_string(),
+    ))
+}
+
 // the last digits are unaffected by the left shifts!
 // therefore, the last few bits change in a more predictable manner -> work out how
 // only afected by the bits shifted in from places 6 to 8 // not really helpful...

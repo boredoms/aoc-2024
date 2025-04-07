@@ -37,7 +37,7 @@ pub fn parse(input: &str) -> Input {
     Input { values, operations }
 }
 
-fn solve(values: &mut HashMap<String, u8>, ops: &Vec<(String, String, String, String)>) {
+fn solve_uwu(values: &mut HashMap<String, u8>, ops: &Vec<(String, String, String, String)>) {
     let mut unsolved = ops.clone();
     let mut i = 0;
 
@@ -129,7 +129,7 @@ fn set_values(values: &mut HashMap<String, u8>, mut x: u64, mut y: u64) {
 pub fn solve_part_one(input: &Input) -> usize {
     let mut input = input.clone();
 
-    solve(&mut input.values, &input.operations);
+    solve_uwu(&mut input.values, &input.operations);
 
     let s = score(&input.values);
 
@@ -295,6 +295,18 @@ pub fn solve_part_two(input: &Input) -> usize {
     println!("{}", wires.join(","));
 
     1
+}
+
+pub fn solve(filename: &str) -> Result<(String, String), String> {
+    let input =
+        &std::fs::read_to_string(filename).or(Err(format!("could not read file {}", filename)))?;
+
+    let input = parse(input);
+
+    Ok((
+        solve_part_one(&input).to_string(),
+        solve_part_two(&input).to_string(),
+    ))
 }
 
 #[cfg(test)]

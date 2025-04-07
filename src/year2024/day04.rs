@@ -122,7 +122,7 @@ pub fn solve_part_one(grid: &Grid) -> usize {
     let needle = vec!['X', 'M', 'A', 'S'];
 
     (0..grid.num_chars())
-        .map(|i| grid_search(&grid, &grid.to_index(i as i32), &needle))
+        .map(|i| grid_search(grid, &grid.to_index(i as i32), &needle))
         .sum()
 }
 
@@ -150,8 +150,20 @@ fn x_search(grid: &Grid, index: &Index) -> usize {
 
 pub fn solve_part_two(grid: &Grid) -> usize {
     (0..grid.num_chars())
-        .map(|i| x_search(&grid, &grid.to_index(i as i32)))
+        .map(|i| x_search(grid, &grid.to_index(i as i32)))
         .sum()
+}
+
+pub fn solve(filename: &str) -> Result<(String, String), String> {
+    let input =
+        &std::fs::read_to_string(filename).or(Err(format!("could not read file {}", filename)))?;
+
+    let input = parse(input);
+
+    Ok((
+        solve_part_one(&input).to_string(),
+        solve_part_two(&input).to_string(),
+    ))
 }
 
 #[cfg(test)]

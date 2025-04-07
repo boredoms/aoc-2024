@@ -7,7 +7,7 @@ pub fn parse(input: &str) -> Input {
     input
 }
 
-pub fn solve_part_one(input: Input) -> usize {
+pub fn solve_part_one(input: &Input) -> usize {
     static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"mul\((\d+),(\d+)\)").unwrap());
 
     RE.captures_iter(input)
@@ -18,7 +18,7 @@ pub fn solve_part_one(input: Input) -> usize {
         .sum()
 }
 
-pub fn solve_part_two(input: Input) -> usize {
+pub fn solve_part_two(input: &Input) -> usize {
     input
         .split("do()")
         .map(|s| match s.split_once("don't()") {
@@ -26,6 +26,18 @@ pub fn solve_part_two(input: Input) -> usize {
             None => solve_part_one(&s),
         })
         .sum()
+}
+
+pub fn solve(filename: &str) -> Result<(String, String), String> {
+    let input =
+        &std::fs::read_to_string(filename).or(Err(format!("could not read file {}", filename)))?;
+
+    let input = parse(input);
+
+    Ok((
+        solve_part_one(&input).to_string(),
+        solve_part_two(&input).to_string(),
+    ))
 }
 
 #[cfg(test)]

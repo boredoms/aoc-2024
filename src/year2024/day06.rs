@@ -244,16 +244,16 @@ pub fn solve_part_two(input: &Map) -> usize {
     map.can_block
 }
 
-pub fn solve_both(input: &str) -> (usize, usize) {
-    let mut map = parse(input);
-    let mut i = 0;
+pub fn solve(filename: &str) -> Result<(String, String), String> {
+    let input =
+        &std::fs::read_to_string(filename).or(Err(format!("could not read file {}", filename)))?;
 
-    while map.move_guard().is_ok() {
-        println!("Step {i}");
-        i += 1;
-    }
+    let input = parse(input);
 
-    (0, map.can_block)
+    Ok((
+        solve_part_one(&input).to_string(),
+        solve_part_two(&input).to_string(),
+    ))
 }
 
 #[cfg(test)]

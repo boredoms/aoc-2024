@@ -61,6 +61,17 @@ fn upper_bound(eq: &Equation) -> i64 {
     i
 }
 
+fn upper_bound_concat(eq: &Equation) -> i64 {
+    let mut i = *eq.operands.first().unwrap();
+
+    for j in eq.operands.iter().skip(1) {
+        i *= next_power_of_ten(*j);
+        i += j;
+    }
+
+    i
+}
+
 fn is_possible(eq: &Equation) -> bool {
     let mut next: Vec<i64> = Vec::new();
     let mut candidates: Vec<i64> = vec![eq.result];
@@ -134,12 +145,33 @@ pub fn solve_part_two(input: &Input) -> usize {
     let mut res: i64 = 0;
 
     for eq in input.iter() {
+        // these checks get rid of some equations immediately
+        // if lower_bound(eq) > eq.result {
+        //     continue;
+        // }
+
+        // if upper_bound_concat(eq) < eq.result {
+        //     continue;
+        // }
+
         if is_possible_2(&eq) {
             res += eq.result;
         }
     }
 
     res as usize
+}
+
+pub fn solve(filename: &str) -> Result<(String, String), String> {
+    let input =
+        &std::fs::read_to_string(filename).or(Err(format!("could not read file {}", filename)))?;
+
+    let input = parse(input);
+
+    Ok((
+        solve_part_one(&input).to_string(),
+        solve_part_two(&input).to_string(),
+    ))
 }
 
 #[cfg(test)]

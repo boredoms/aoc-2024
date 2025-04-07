@@ -77,6 +77,18 @@ pub fn solve_part_two(input: &Input) -> usize {
         .sum::<u32>() as usize
 }
 
+pub fn solve(filename: &str) -> Result<(String, String), String> {
+    let input =
+        &std::fs::read_to_string(filename).or(Err(format!("could not read file {}", filename)))?;
+
+    let input = parse(input);
+
+    Ok((
+        solve_part_one(&input).to_string(),
+        solve_part_two(&input).to_string(),
+    ))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
