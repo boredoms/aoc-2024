@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    mem::swap,
-};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone)]
 pub struct Input {
@@ -37,8 +34,8 @@ pub fn parse(input: &str) -> Input {
     Input { values, operations }
 }
 
-fn solve_uwu(values: &mut HashMap<String, u8>, ops: &Vec<(String, String, String, String)>) {
-    let mut unsolved = ops.clone();
+fn run_circuit(values: &mut HashMap<String, u8>, ops: &[(String, String, String, String)]) {
+    let mut unsolved = Vec::from(ops);
     let mut i = 0;
 
     while !unsolved.is_empty() {
@@ -75,7 +72,7 @@ fn score(values: &HashMap<String, u8>) -> usize {
     let mut res = 0;
 
     values.iter().for_each(|(k, v)| {
-        if k.chars().next().unwrap() == 'z' {
+        if k.starts_with('z') {
             let s: usize = k[1..].parse().unwrap();
             let v = *v as usize;
 
@@ -84,217 +81,72 @@ fn score(values: &HashMap<String, u8>) -> usize {
     });
 
     res
-}
-
-fn get_x(values: &HashMap<String, u8>) -> usize {
-    let mut res = 0;
-
-    values.iter().for_each(|(k, v)| {
-        if k.chars().next().unwrap() == 'x' {
-            let s: usize = k[1..].parse().unwrap();
-            let v = *v as usize;
-
-            res |= v << s;
-        }
-    });
-
-    res
-}
-
-fn get_y(values: &HashMap<String, u8>) -> usize {
-    let mut res = 0;
-
-    values.iter().for_each(|(k, v)| {
-        if k.chars().next().unwrap() == 'y' {
-            let s: usize = k[1..].parse().unwrap();
-            let v = *v as usize;
-
-            res |= v << s;
-        }
-    });
-
-    res
-}
-
-fn set_values(values: &mut HashMap<String, u8>, mut x: u64, mut y: u64) {
-    for i in 0..64 {
-        let xs = format!("x{:0>2}", i);
-        values.insert(xs, (x >> i & 1) as u8);
-
-        let ys = format!("y{:0>2}", i);
-        values.insert(ys, (y >> i & 1) as u8);
-    }
 }
 
 pub fn solve_part_one(input: &Input) -> usize {
     let mut input = input.clone();
 
-    solve_uwu(&mut input.values, &input.operations);
+    run_circuit(&mut input.values, &input.operations);
 
-    let s = score(&input.values);
-
-    println!("{:b}", s);
-
-    s
+    score(&input.values)
 }
 
-fn find_op(
-    op1: String,
-    op2: String,
-    ops: &Vec<(String, String, String, String)>,
-) -> Vec<(String, String)> {
-    ops.iter()
-        .filter(|(_, x, y, _)| *x == op1 && *y == op2 || *x == op2 && *y == op1)
-        .map(|(op, _, _, z)| (op.clone(), z.clone()))
-        .collect()
-}
+// in a full adder,
+// the inputs go into an XOR and an AND
+// the carry input goes into an AND and and XOR and comes from an OR
+// the output of the first XOR must go into an AND and and XOR
+// the outputs of an AND go into an OR
+// the outputs come from an XOR
 
-fn validate_full_adder(
-    ops: &Vec<(String, String, String, String)>,
-    carry: &mut String,
-    n: u8,
-) -> Vec<String> {
-    let xn = format!("x{:02}", n);
-    let yn = format!("y{:02}", n);
-    let zn = format!("z{:02}", n);
+pub fn solve_part_two(input: &Input) -> String {
+    let mut outputs = HashSet::new();
 
-    println!("Carry_{n}: {carry}");
+    input.operations.iter().for_each(|(op, x, y, _)| {
+        outputs.insert((x.clone(), op.clone()));
+        outputs.insert((y.clone(), op.clone()));
+    });
 
-    let mut zs = find_op(xn, yn, ops);
+    let mut res: Vec<&str> = Vec::new();
 
-    if zs.len() != 2 {
-        println!("Problem in zs of half adder {n}");
-        println!("{:?}", zs);
+    for (op, x, y, z) in &input.operations {
+        match op.as_str() {
+            "AND" => {
+                if x != "x00" && y != "x00" && !outputs.contains(&(z.to_string(), "OR".to_string()))
+                {
+                    res.push(z);
+                }
+            }
+            "OR" => {
+                if z.starts_with('z') && z != "z45" {
+                    res.push(z)
+                }
+
+                if outputs.contains(&(z.to_string(), "OR".to_string())) {
+                    res.push(z);
+                }
+            }
+            "XOR" => {
+                if x.starts_with('x') && y.starts_with('y')
+                    || x.starts_with('y') && y.starts_with('x')
+                {
+                    if x != "x00"
+                        && y != "y00"
+                        && !outputs.contains(&(z.to_string(), "XOR".to_string()))
+                    {
+                        res.push(z);
+                    }
+                } else {
+                    if !z.starts_with('z') {
+                        res.push(z);
+                    }
+                }
+            }
+            _ => unreachable!(),
+        }
     }
 
-    if zs[0].0 == "XOR" {
-        zs.swap(0, 1);
-    }
-
-    // get the half added wire
-    let xy_and = zs[0].1.clone();
-
-    if xy_and.starts_with("z") {
-        println!("x AND y of adder {n} routed wrongly: {}", xy_and);
-    }
-
-    let xy_xor = zs[1].1.clone();
-
-    if xy_xor.starts_with("z") {
-        println!("x XOR y of adder {n} routed wrongly: {}", xy_xor);
-    }
-
-    let mut cxy_ops = find_op(xy_xor, carry.clone(), ops);
-
-    if cxy_ops.len() != 2 {
-        println!("Problem in cxy_ops of half adder {n}");
-        println!("{:?}", cxy_ops);
-    }
-
-    if cxy_ops[0].0 == "XOR" {
-        cxy_ops.swap(0, 1);
-    }
-
-    if cxy_ops[1].1 != zn {
-        println!("Output of adder {n} routed wrongly: {}", cxy_ops[1].1);
-        println!("Should be {zn}");
-        println!("{:?}", cxy_ops);
-    }
-
-    let cxy_carry = cxy_ops[0].1.clone();
-
-    let carry_ops = find_op(cxy_carry, xy_and, ops);
-
-    if carry_ops.len() != 1 {
-        println!("Problem in carry_ops of half adder {n}");
-        println!("{:?}", carry_ops);
-    }
-
-    if carry_ops[0].1.starts_with("z") {
-        println!("Carry of adder {n} routed wrongly: {}", carry_ops[0].1);
-        println!("{:?}", cxy_ops);
-    }
-
-    *carry = carry_ops[0].1.clone();
-
-    println!("Adder {n} appears to be valid. (?)");
-
-    Vec::new()
-}
-
-fn validate_adder(ops: &Vec<(String, String, String, String)>) -> Vec<String> {
-    let xn = format!("x{:02}", 0);
-    let yn = format!("y{:02}", 0);
-
-    // ops and wires of the input gates
-    let mut zs = find_op(xn, yn, ops);
-    let mut carry;
-
-    // swap so zs[0] is the carry
-    if zs[0].0 == "XOR" {
-        zs.swap(0, 1);
-    }
-
-    if zs[1].1 != "z00" {
-        println!("Something is wrongo on bit 0");
-    }
-
-    carry = zs[0].1.clone();
-
-    println!("0 bit carry is {}", carry);
-
-    for i in 1..44 {
-        validate_full_adder(ops, &mut carry, i);
-    }
-
-    Vec::new()
-}
-
-// need to swap z05 and frn
-
-// wnf and vtj
-// wnf should be x16 XOR y16
-// vtj should be x16 AND y16
-
-// z21 and gmq
-
-// z39 and wtt
-
-pub fn solve_part_two(input: &Input) -> usize {
-    let mut input = input.clone();
-
-    validate_adder(&input.operations);
-
-    //set_values(&mut input.values, 0b100000, 0b10000);
-
-    // let x = get_x(&input.values);
-    // let y = get_y(&input.values);
-
-    // let xy = x + y;
-
-    // solve(&mut input.values, &input.operations);
-
-    // x00 should only affect z00 and z01 and so on
-
-    //println!("{:?}", input.values);
-
-    // for i in 0..45 {
-    //     let mut s = find_predecessors(&format!("z{:02}", i), &input.operations);
-    //     s.sort();
-
-    //     println!("{:?}", s);
-    // }
-    // let s = score(&input.values);
-
-    // println!("{:b}", xy);
-    // println!("{:b}", s);
-
-    let mut wires = vec!["z39", "wtt", "z21", "gmq", "wnf", "vtj", "z05", "frn"];
-    wires.sort();
-
-    println!("{}", wires.join(","));
-
-    1
+    res.sort();
+    res.join(",")
 }
 
 pub fn solve(filename: &str) -> Result<(String, String), String> {
@@ -332,6 +184,6 @@ mod tests {
         let input = parse(input);
         let result = solve_part_two(&input);
 
-        assert_eq!(0, result);
+        assert_eq!("", result);
     }
 }
