@@ -1,60 +1,19 @@
-use std::collections::{HashMap, HashSet};
+use std::sync::Mutex;
 
 type Input = Vec<u32>;
 
-fn hash(x: u32) -> u32 {
-    let mask = 0xffffff;
-
-    // add 64 * x to x and mask
-    let x = x ^ (x << 6) & mask;
-
-    // add x / 32 to x and mask
-    let x = x ^ (x >> 5) & mask;
-
-    // add 2048 * x to x and mask
-    let x = x ^ (x << 11) & mask;
-
-    x
+fn hash(mut x: u32) -> u32 {
+    x ^= (x << 6) & 0xffffff;
+    x ^= x >> 5;
+    x ^ (x << 11) & 0xffffff
 }
 
-fn find_period(mut n: u32) -> u64 {
-    let mut i = 1;
-    let mut s = hash(n);
-    while s != n {
-        s = hash(s);
-        i += 1;
-    }
-
-    i
+#[inline]
+fn to_index(s: &[u32]) -> usize {
+    (s[0] + 19 * (s[1] + 19 * (s[2] + 19 * s[3]))) as usize
 }
 
-fn create_difference_vector(mut n: u32) -> Vec<(u32, i32)> {
-    let mut res = Vec::with_capacity(2000);
-
-    for _ in 0..2000 {
-        let s = hash(n);
-
-        res.push((s % 10, (s as i32 % 10 - n as i32 % 10) % 10));
-
-        n = s;
-    }
-
-    res
-}
-
-fn handle_monkey(d: Vec<(u32, i32)>, prices: &mut HashMap<String, u32>) {
-    let mut seen = HashSet::new();
-
-    for i in 0..d.len() - 4 {
-        let s = format!("{}{}{}{}", d[i + 0].1, d[i + 1].1, d[i + 2].1, d[i + 3].1);
-
-        if !seen.contains(&s) {
-            seen.insert(s.clone());
-            *prices.entry(s).or_default() += d[i + 3].0;
-        }
-    }
-}
-
+// create the difference vector and the sum
 pub fn parse(input: &str) -> Vec<u32> {
     input.lines().map(|line| line.parse().unwrap()).collect()
 }
@@ -62,29 +21,75 @@ pub fn parse(input: &str) -> Vec<u32> {
 pub fn solve_part_one(input: &Input) -> usize {
     let numbers = input;
 
-    numbers.iter().fold(0, |sum, n| {
-        let mut n = *n;
-        for _ in 0..2000 {
-            n = hash(n);
-        }
-        (n as usize) + sum
-    })
+    numbers
+        .iter()
+        .map(|n| {
+            let mut n = *n;
+            for _ in 0..2000 {
+                n = hash(n)
+            }
+            n as usize
+        })
+        .sum()
 }
 
+#[inline]
+fn compute_difference(a: u32, b: u32) -> u32 {
+    9 - a % 10 + b % 10
+}
+
+fn compute_monkey(n: u32, res: &mut [u32]) {
+    let mut value = vec![0; 130321];
+    let mut seen = vec![false; 130321];
+
+    let a = hash(n);
+    let b = hash(a);
+    let c = hash(b);
+
+    let mut window = [n, a, b, c];
+    let mut difference = [
+        0,
+        compute_difference(n, a),
+        compute_difference(a, b),
+        compute_difference(b, c),
+    ];
+
+    for _ in 4..2000 {
+        let next = hash(window[3]);
+        let next_diff = compute_difference(window[3], next);
+
+        window.rotate_right(1);
+        difference.rotate_right(1);
+
+        window[3] = next;
+        difference[3] = next_diff;
+
+        let index = to_index(&difference);
+
+        if !seen[index] {
+            seen[index] = true;
+            value[index] = window[3] % 10;
+        }
+    }
+
+    for (i, e) in value.iter().enumerate() {
+        res[i] += e;
+    }
+}
+
+// serial code is pretty okay, let's try parallel
 pub fn solve_part_two(input: &Input) -> usize {
     let numbers = input;
 
-    let mut res = HashMap::new();
+    let mut res = vec![0; 130321];
+
+    let mut res_ = Mutex::new(vec![0; 130321]);
 
     for i in numbers {
-        let v = create_difference_vector(*i);
-
-        handle_monkey(v, &mut res);
+        compute_monkey(*i, &mut res)
     }
 
-    println!("{:?}", res["-21-13"]);
-
-    *res.iter().max_by_key(|s| s.1).unwrap().1 as usize
+    *res.iter().max().unwrap() as usize
 }
 
 pub fn solve(filename: &str) -> Result<(String, String), String> {
@@ -107,6 +112,8 @@ pub fn solve(filename: &str) -> Result<(String, String), String> {
 // 9 = 0b0101
 // period is usually the whole number state, so it won't help to use that for identifying patterns
 // algorithmic approaches (other than brute force): ???
+//
+// need to check 130321 sequences in total
 
 #[cfg(test)]
 mod tests {
