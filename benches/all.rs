@@ -33,7 +33,21 @@ macro_rules! benchmark_year {
                 });
             })*
 
-            criterion_group!(benches, $($day, )*);
+
+            pub fn compare(c: &mut Criterion) {
+                let mut group = c.benchmark_group("compare");
+
+                $(
+                let path = "data/input/".to_owned() + stringify!($year) + "/" + stringify!($day) + ".txt";
+
+                group.bench_function(&format!("[compare] {}", stringify!($day)), |b| {
+                    b.iter(|| rust_aoc::$year::$day::solve(&path))
+                });
+                )*
+                group.finish();
+            }
+
+            criterion_group!(benches, compare, $($day, )*);
         }
     };
 }
@@ -41,7 +55,6 @@ macro_rules! benchmark_year {
 benchmark_year!(year2024; 
     day01, day02, day03, day04, day05, day06, day07, day08, day09, day10,
     day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, 
-    day21, day22, day23, // day24, needs to be fixed still
-    day25);
+    day21, day22, day23, day24, day25);
 
 criterion_main!(year2024::benches);
