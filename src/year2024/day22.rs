@@ -1,7 +1,11 @@
-use std::sync::Mutex;
+use std::{
+    num,
+    sync::{Arc, Mutex},
+};
 
 type Input = Vec<u32>;
 
+#[inline]
 fn hash(mut x: u32) -> u32 {
     x ^= (x << 6) & 0xffffff;
     x ^= x >> 5;
@@ -9,8 +13,8 @@ fn hash(mut x: u32) -> u32 {
 }
 
 #[inline]
-fn to_index(s: &[u32]) -> usize {
-    (s[0] + 19 * (s[1] + 19 * (s[2] + 19 * s[3]))) as usize
+fn to_index(x: u32, y: u32, z: u32, w: u32) -> usize {
+    (x + 19 * (y + 19 * (z + 19 * w))) as usize
 }
 
 // create the difference vector and the sum
@@ -38,58 +42,62 @@ fn compute_difference(a: u32, b: u32) -> u32 {
     9 - a % 10 + b % 10
 }
 
-fn compute_monkey(n: u32, res: &mut [u32]) {
-    let mut value = vec![0; 130321];
-    let mut seen = vec![false; 130321];
-
-    let a = hash(n);
-    let b = hash(a);
-    let c = hash(b);
-
-    let mut window = [n, a, b, c];
-    let mut difference = [
-        0,
-        compute_difference(n, a),
-        compute_difference(a, b),
-        compute_difference(b, c),
-    ];
-
-    for _ in 4..2000 {
-        let next = hash(window[3]);
-        let next_diff = compute_difference(window[3], next);
-
-        window.rotate_right(1);
-        difference.rotate_right(1);
-
-        window[3] = next;
-        difference[3] = next_diff;
-
-        let index = to_index(&difference);
-
-        if !seen[index] {
-            seen[index] = true;
-            value[index] = window[3] % 10;
-        }
-    }
-
-    for (i, e) in value.iter().enumerate() {
-        res[i] += e;
-    }
-}
-
 // serial code is pretty okay, let's try parallel
-pub fn solve_part_two(input: &Input) -> usize {
-    let numbers = input;
+pub fn solve_part_two<'a>(input: &'a Input) -> usize {
+    //let mut res = vec![0; 130321];
+    let num_threads = 8;
 
-    let mut res = vec![0; 130321];
+    let chunks = input.chunks(input.len() / num_threads + 1);
 
-    let mut res_ = Mutex::new(vec![0; 130321]);
+    let res = Arc::new(Mutex::new(vec![0; 130321]));
 
-    for i in numbers {
-        compute_monkey(*i, &mut res)
-    }
+    std::thread::scope(|s| {
+        for (i, chunk) in chunks.enumerate() {
+            let res = Arc::clone(&res);
 
-    *res.iter().max().unwrap() as usize
+            s.spawn(move || {
+                let mut value = vec![0; 130321];
+                let mut seen = vec![0u16; 130321];
+
+                for (i, n) in chunk.iter().enumerate() {
+                    let a = hash(*n);
+                    let b = hash(a);
+                    let c = hash(b);
+
+                    let mut x = compute_difference(*n, a);
+                    let mut y = compute_difference(a, b);
+                    let mut z = compute_difference(b, c);
+
+                    let mut prev = c;
+
+                    for _ in 4..2000 {
+                        let next = hash(prev);
+                        let next_diff = compute_difference(prev, next);
+
+                        let index = to_index(x, y, z, next_diff);
+
+                        (x, y, z) = (y, z, next_diff);
+
+                        if seen[index] < (i + 1) as u16 {
+                            seen[index] = (i + 1) as u16;
+                            value[index] += next % 10;
+                        }
+
+                        prev = next;
+                    }
+                }
+                let mut v = res.lock().unwrap();
+
+                for (i, e) in value.iter().enumerate() {
+                    v[i] += e;
+                }
+            });
+        }
+    });
+
+    let v = res.lock().unwrap();
+
+    *v.iter().max().unwrap() as usize
 }
 
 pub fn solve(filename: &str) -> Result<(String, String), String> {
