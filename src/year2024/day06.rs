@@ -1,5 +1,10 @@
 use std::{collections::HashSet, hash::Hash, str::FromStr};
 
+use crate::util::{
+    grid::Grid,
+    point::{Point, DOWN, LEFT, RIGHT, UP},
+};
+
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 enum Guard {
     Up,
@@ -138,7 +143,6 @@ impl Map {
                     self.grid[(i * self.grid_size.0 + j) as usize].to_string()
                 );
             }
-            println!();
         }
     }
 
@@ -234,6 +238,54 @@ pub fn solve_part_one(input: &Map) -> usize {
     unique.len()
 }
 
+pub struct Input {
+    map: Grid<u8>,
+    start: Point,
+}
+
+pub fn parse_(input: &str) -> Input {
+    let map = Grid::from_str(input);
+    let start = map.find(|c| *c == b'^').expect("map must have a guard");
+
+    Input { map, start }
+}
+
+fn rotate_clockwise(direction: &Point) -> Point {
+    match *direction {
+        UP => RIGHT,
+        RIGHT => DOWN,
+        DOWN => LEFT,
+        LEFT => UP,
+        _ => unreachable!("this only works on cardinal directions"),
+    }
+}
+
+pub fn solve_part_one_(input: &Input) -> usize {
+    let mut direction = UP;
+    let mut position = input.start;
+    let mut seen = Grid::new_with_same_size(&input.map);
+
+    seen[position] = true;
+    let mut res = 1;
+
+    while let Some(p) = input.map.try_get(&(position + direction)) {
+        match p {
+            b'^' | b'.' => {
+                position += direction;
+
+                if !seen[position] {
+                    res += 1;
+                    seen[position] = true;
+                }
+            }
+            b'#' => direction = rotate_clockwise(&direction),
+            _ => unreachable!(),
+        }
+    }
+
+    res
+}
+
 pub fn solve_part_two(input: &Map) -> usize {
     let mut map = input.clone();
 
@@ -248,10 +300,12 @@ pub fn solve(filename: &str) -> Result<(String, String), String> {
     let input =
         &std::fs::read_to_string(filename).or(Err(format!("could not read file {}", filename)))?;
 
+    let uwu = parse_(input);
+
     let input = parse(input);
 
     Ok((
-        solve_part_one(&input).to_string(),
+        solve_part_one_(&uwu).to_string(),
         solve_part_two(&input).to_string(),
     ))
 }
