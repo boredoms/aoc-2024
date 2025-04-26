@@ -119,8 +119,8 @@ pub fn solve(filename: &str) -> Result<(String, String), String> {
     let input = parse(input);
 
     Ok((
-        solve_part_one(&input).to_string(),
-        solve_part_two(&input).to_string(),
+        solve_part_one(input).to_string(),
+        solve_part_two(input).to_string(),
     ))
 }
 
