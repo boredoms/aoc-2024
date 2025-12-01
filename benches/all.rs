@@ -57,4 +57,7 @@ benchmark_year!(year2024;
     day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, 
     day21, day22, day23, day24, day25);
 
-criterion_main!(year2024::benches);
+benchmark_year!(year2025;
+    day01);
+
+criterion_main!(year2024::benches, year2025::benches);

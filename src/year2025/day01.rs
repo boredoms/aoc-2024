@@ -1,25 +1,14 @@
+use crate::util::{self, parse::ParseSigned};
+
 const DIAL_START: i32 = 50;
 
 type Input = Vec<i32>;
 
 pub fn parse(input: &str) -> Input {
-    input
-        .lines()
-        .map(|line| {
-            let n = line
-                .chars()
-                .skip(1)
-                .fold(0, |n, c| n * 10 + c.to_digit(10).unwrap()) as i32;
-            if line.starts_with('L') {
-                -n
-            } else {
-                n
-            }
-        })
-        .collect()
+    ParseSigned::new_with_sign(input.bytes(), b'L').collect()
 }
 
-pub fn solve_part_one(input: &Input) -> usize {
+pub fn solve_part_one(input: &[i32]) -> usize {
     input
         .iter()
         .fold((0, DIAL_START), |(key, sum), n| {
@@ -29,7 +18,7 @@ pub fn solve_part_one(input: &Input) -> usize {
         .0 as usize
 }
 
-pub fn solve_part_two(input: &Input) -> usize {
+pub fn solve_part_two(input: &[i32]) -> usize {
     input
         .iter()
         .fold((0, DIAL_START), |(key, sum), n| {

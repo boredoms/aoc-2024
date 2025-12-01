@@ -5,5 +5,6 @@ pub mod year2025;
 
 pub mod util {
     pub mod grid;
+    pub mod parse;
     pub mod point;
 }
