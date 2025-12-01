@@ -286,6 +286,10 @@ pub fn solve_part_one_(input: &Input) -> usize {
     res
 }
 
+pub fn solve_part_two_(input: &Input) -> usize {
+    0
+}
+
 pub fn solve_part_two(input: &Map) -> usize {
     let mut map = input.clone();
 

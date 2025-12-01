@@ -203,7 +203,7 @@ fn tree_search(c: &mut Computer, depth: i64) -> Option<u64> {
         return Some(c.a);
     }
 
-    println!("called with c.a = {}", c.a);
+    // println!("called with c.a = {}", c.a);
 
     let mut min = None;
 
