@@ -23,10 +23,8 @@ pub fn solve_part_one(input: &Input) -> usize {
     input
         .iter()
         .fold((0, DIAL_START), |(key, sum), n| {
-            (
-                key + if (sum + n) % 100 == 0 { 1 } else { 0 },
-                (sum + n) % 100,
-            )
+            let pos = (sum + n).rem_euclid(100);
+            (key + i32::from(pos == 0), pos)
         })
         .0 as usize
 }
@@ -35,12 +33,10 @@ pub fn solve_part_two(input: &Input) -> usize {
     input
         .iter()
         .fold((0, DIAL_START), |(key, sum), n| {
-            let crossings = if *n < 0 {
-                (n + (sum - 100) % 100) / 100
-            } else {
-                (n + (sum + 100) % 100) / 100
-            };
-            (key + crossings.abs(), (sum + n) % 100)
+            (
+                key + ((n + sum - 100 * i32::from(*n < 0 && sum != 0)) / 100).abs(),
+                (sum + n).rem_euclid(100),
+            )
         })
         .0 as usize
 }
