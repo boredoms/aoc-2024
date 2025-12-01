@@ -1,6 +1,7 @@
-use std::{path::PathBuf, str::FromStr};
+use std::{path::PathBuf, str::FromStr, thread::available_parallelism};
 
 use rust_aoc::year2024;
+use rust_aoc::year2025;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum TestOrRun {
@@ -114,6 +115,10 @@ fn dispatch(year: u32, day: u32, cmd: TestOrRun) -> Result<(String, String), Str
             23 => year2024::day23::solve(filename),
             24 => year2024::day24::solve(filename),
             25 => year2024::day25::solve(filename),
+            _ => Err(format!("day not implemented {}", day)),
+        },
+        2025 => match day {
+            1 => year2025::day01::solve(filename),
             _ => Err(format!("day not implemented {}", day)),
         },
         _ => Err(format!("year not implemented {}", year)),
